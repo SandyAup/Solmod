@@ -182,7 +182,7 @@ def Beta_mAEkn(m_gev, a_cr, ekn_gevn):
    #  Ekn               Kinetic energy per nucleon (Ekn=Ek/n) of the particle [GeV/n]
 
    	if (a_cr == 0):
-		 a_cr = 1
+			a_cr = 1
    	ek_gev = ekn_gevn * float(a_cr)
    	return np.sqrt(ek_gev * (ek_gev + 2. * m_gev)) / (ek_gev + m_gev)
 
@@ -196,7 +196,7 @@ def Ekn_to_E(ekn_gevn, a_cr, m_gev):
    #  m_gev             Mass of the particle [GeV]
 
    	if (a_cr == 0):
-		 a_cr = 1 
+			a_cr = 1 
    	return ekn_gevn * float(a_cr) + m_gev 
 
 
@@ -209,7 +209,7 @@ def Ekn_to_Ek(ekn_gevn, a_cr):
    #  A                 Atomic number of the species (A=1 for leptons so that 'Ekn'(=Ek) exists)
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	return ekn_gevn * float(a_cr) 
 
 
@@ -223,7 +223,7 @@ def Ekn_to_p(ekn_gevn, a_cr, m_gev):
    #  m_gev             Mass of the particle [GeV]
 
    	if (a_cr == 0):	
-		a_cr = 1 
+			a_cr = 1 
    	ek_gev = ekn_gevn * float(a_cr) 
    	return sqrt(ek_gev * (ek_gev +  2. * m_gev)) 
 
@@ -238,7 +238,7 @@ def Ekn_to_R(ekn_gevn, a_cr, m_gev, z_cr):
    #  Z                 Charge of the species
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	ek_gev = ekn_gevn * float(a_cr) 
    	return np.sqrt(ek_gev * (ek_gev +  2. * m_gev)) / (float)(abs(z_cr)) 
 
@@ -263,7 +263,7 @@ def Ek_to_Ekn(ek_gev, a_cr):
    #  A                 Atomic number of the species (A=1 for leptons so that 'Ekn'(=Ek) exists)
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	return ek_gev / float(a_cr) 
 
 #--------------------------------
@@ -349,7 +349,7 @@ def Gamma_mAZR(m_gev, a_cr, z_cr, r_gv):
    #  R  	       Rigidity (R=pc/Ze) of the particle [GV]
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	e = R_to_E(r_gv, m_gev, z_cr) 
    	return e / m_gev 
 
@@ -363,7 +363,7 @@ def Gamma_mAEkn(m_gev, a_cr, ekn_gevn):
    #  E  	       Total energy of the particle [GeV]
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	return (ekn_gevn * float(a_cr) + m_gev) / m_gev 
 
 #--------------------------------
@@ -385,7 +385,7 @@ def p_to_Ekn(p_gev, a_cr, m_gev):
    #  m_gev	       Mass of the particle [GeV]
 
    	if (a_cr == 0):
-		a_cr = 1 
+			a_cr = 1 
    	return (sqrt(p_gev * p_gev + m_gev * m_gev) - m_gev) / float(a_cr) 
 
 #--------------------------------
@@ -429,10 +429,10 @@ def R_to_Ekn(r_gv, a_cr, m_gev, z_cr):
    #  m_gev	       Mass of the particle [GeV]
    #  Z  	       Charge of the species
 
-   	if (a_cr == 0):
-		a_cr = 1 
-   	p_gev = r_gv * float(abs(z_cr)) 
-   	return (np.sqrt(p_gev * p_gev + m_gev * m_gev) - m_gev) / float(a_cr) 
+		if (a_cr == 0):
+			a_cr = 1 
+		p_gev = r_gv * float(abs(z_cr)) 
+		return (np.sqrt(p_gev * p_gev + m_gev * m_gev) - m_gev) / float(a_cr) 
 
 #--------------------------------
 def R_to_E(r_gv, m_gev, z_cr):
