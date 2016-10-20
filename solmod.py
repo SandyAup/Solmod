@@ -12,7 +12,7 @@ import scipy.interpolate as inter
 
 import time
 import sys
-sys.path.insert(0, '/ams/aupetit/Documents/Pheno/Solmod/Lib/')
+sys.path.insert(0, '/ams/aupetit/Documents/Pheno/Code_Python/Lib/')
 from Physics import *
 from ExtractData import *
 from PlotLib import *
@@ -24,9 +24,6 @@ rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
 
 np.set_printoptions(precision=4, linewidth=200)
-
-
-# /!\ Ne pas toucher aux variables N_IS, Nexp, Ndata dans les fonctions !!!
 
 #-------------------------------------------------------------------------------#
 #						  	    MACROS SECONDAIRES								#
@@ -40,7 +37,7 @@ def InitParameters1D(MODE, Nexp, list_CR) :
 			init_pars_H = [3.5, 1.9, -0.5, -1.3, -3., -3.8]
 			init_pars += init_pars_H
 		elif CR == 'He' :
-			init_pars_He = [2.5,1.5,-0.3,-1.15,-2.5,-3.4]  
+			init_pars_He = [1.8,1.,-1.,-2.3,-3.8,-4.4]  
 			init_pars += init_pars_He
 		elif CR == 'Electron' :
 			init_pars_Elec = [1.5,0.8,-0.2,-1.,-2.,-3.0]
@@ -80,20 +77,21 @@ def IS_Spline_flux(ekn, parIS, name_exp_CR) :
 
 	logA = 0. ; B = 0.
 	ekn_tmp = 0. ; y_tmp = 0.
+	result = 0.
 
 	if ekn_log > xk_log_min and ekn_log < xk_log_max :
 		result = inter.spline(xk_log, parIS, ekn_log, order=3, kind='smoothest')
 
 	# Extrapolation loi de puissance : y = A x^B
 	elif ekn_log < xk_log_min :
-		ekn_tmp = np.log10(R_to_Ekn(1.05, a_cr, mGeV, z_cr))
+		ekn_tmp = np.log10(R_to_Ekn(1.005, a_cr, mGeV, z_cr))
 		y_tmp = inter.spline(xk_log, parIS, ekn_tmp, order=3, kind='smoothest')
 		B = (y_tmp - parIS[0]) / (ekn_tmp - xk_log[0])
 		logA = parIS[0] - (B * xk_log[0])
 		result = logA + B * ekn_log
 
 	elif ekn_log > xk_log_max :
-		ekn_tmp = np.log10(R_to_Ekn(799.95, a_cr, mGeV, z_cr))
+		ekn_tmp = np.log10(R_to_Ekn(799.995, a_cr, mGeV, z_cr))
 		y_tmp = inter.spline(xk_log, parIS, ekn_tmp, order=3, kind='smoothest')
 		B = (parIS[5] - y_tmp) / (xk_log[5] - ekn_tmp)
 		logA = parIS[5] - (B * xk_log[5])
@@ -106,9 +104,46 @@ def IS_Spline_flux(ekn, parIS, name_exp_CR) :
 def Force_Field(Edata, par_IS, par_mod, name_exp_CR) :
 
 	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
+	AZ = a_cr / z_cr
+
+	'''
+	print par_mod
+	Emin_IS = 0.126
+	Emax_IS = 5.e3
+	E_IS = np.logspace(log10(Emin_IS), log10(Emax_IS), num = 150)
+	#print E_IS
+	print Edata
+	print Edata + par_mod
+	'''
+	#par_IS = [ 1.8,  1.,  -1.,  -2.3, -3.8, -4.4]
+	#par_IS = [ 2.154, 1.5285, -0.7891, -1.5562, -3.317, -4.1064]
+	#par_IS =  [ 5., 1.6202, -0.8229, -1.6762, -3.3307, -4.1318]
+	#print "par_IS : ", par_IS
+
 	flux_TOA = []
+	#flux_IS1 = []
+	#flux_IS2 = []
 	for i in range(0, len(Edata)):
-		flux_TOA.append((np.power(Edata[i],2) + 2*mGeV*Edata[i]) / (np.power((Edata[i]+par_mod),2) + 2*mGeV*(Edata[i]+par_mod)) * IS_Spline_flux(Edata[i]+par_mod, par_IS, name_exp_CR))
+		flux_TOA.append((np.power(Edata[i],2)*a_cr + 2*mGeV*Edata[i]) / (np.power((Edata[i]+par_mod/AZ),2)*a_cr + 2*mGeV*(Edata[i]+par_mod/AZ)) * IS_Spline_flux(Edata[i]+par_mod/AZ, par_IS, name_exp_CR))
+		#flux_IS2.append(IS_Spline_flux(Edata[i], par_IS, name_exp_CR))
+		#flux_IS1.append(IS_Spline_flux(Edata[i]+z_cr*par_mod, par_IS, name_exp_CR))
+	#for i in range(0, len(E_IS)):	
+		#flux_IS2.append(IS_Spline_flux(E_IS[i], par_IS, name_exp_CR))
+		#print "Etoa : ", Edata[i], "spline : ", IS_Spline_flux(Edata[i]+par_mod, par_IS, name_exp_CR)
+
+	'''
+	fig_all = plt.figure(figsize=(12,8))
+	fig_all.set_facecolor('white')
+	plot_IS1 = plt.plot(Edata+z_cr*par_mod, flux_IS1*np.power(Edata+z_cr*par_mod, 2.), c='black', lw = 2.5, label='Interstellar flux')
+	#plot_IS2 = plt.plot(E_IS, flux_IS2*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
+	#plot_IS2 = plt.plot(Edata, flux_IS2*np.power(Edata, 2.), c='black', lw = 2.5, label='Interstellar flux')
+	plot_TOA = plt.plot(Edata, flux_TOA*np.power(Edata, 2.), c='red', lw = 2.5, label='TOA flux')
+	plt.xscale('log')
+	plt.yscale('log')
+	plt.show()
+	sys.exit()
+	'''
+
 	return np.array(flux_TOA)
 
 #--------------------------------
@@ -121,10 +156,9 @@ def Momen(R, E0, AZ, par_IS, exp_CR):
 
  	# dJ_IS/dEkn: GCR LIS from Webber and Lockwood [2001] in particles/m 2 .sr.s.MeV/n,
   	# with Ek=log(T) the kinetic energy in MeV/n.
-
   	#FLIS = 21.1*pow(T, -2.8) / (1 + 5.85*pow(T, -1.22) + 1.18*pow(T, -2.54))
-  	FLIS = IS_Spline_flux(T, par_IS, exp_CR)
 
+  	FLIS = IS_Spline_flux(T, par_IS, exp_CR)
 	return beta, KE, T, FLIS
 
 #--------------------------------
@@ -134,22 +168,22 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 	file_name = 'results/BestFit1D.txt'
 	results = open(file_name, "w")
 
-	# Standard values used
-  	V0 		= 1.e3 * 400. / Convert_AUperyr_to_mpers()		# Solar wind V(r) = V0 [AU/yr]
-  	#Rd		= 29.
+	# Cosmic ray properties
+	a_cr, z_cr, E0 = CREntry(name_exp_CR)
+	AZ = float(a_cr)/float(z_cr)
 
 	# Space grid
 	N = 91
 	dr = 1.0
 	
 	# Energy grid
-	a_cr, z_cr, E0 = CREntry(name_exp_CR)
-	AZ		= float(a_cr/z_cr)
 	R 		= Ekn_to_R(np.amax(Edata_exp), a_cr, E0, z_cr)
 	Rmin	= Ekn_to_R(np.amin(Edata_exp), a_cr, E0, z_cr)
 	dlnR	= 0.02												# Optimized value dlnR   = 0.02
 
 	# Lists and arrays initialization
+	V0 	= 1.e3 * 400. / Convert_AUperyr_to_mpers()			# Solar wind V(r) = V0 [AU/yr]
+	#Rd	= 29.
   	K, V, r, dKdr, dV, F, X, Xn, Y = (np.zeros(N+1) for _ in xrange(9)) 
 	Rgrid, flux_TOA = ([] for _ in xrange(2))
 
@@ -164,22 +198,18 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 		r[i]  	= r[i-1] + dr                       		# => Position r
 		V[i] 	= V0										# V(r) = cst = V0
 		dV[i]	= 2.0 * V[i] / r[i]							# 2V/r + dV/dr
-		K[i] = par_K0 										# K(r, E) = K0*beta*R  => K(r) = K0
+		K[i] 	= par_K0 									# K(r, E) = K0*beta*R  => K(r) = K0
 		dKdr[i] = 0. 
 		#K[i] = K0 * exp((r[i]-1.)/Rd)
 		#dKdr[i] = K[i]/Rd
-  	  	
-  	#  Loop on all energies (from max to min)
-	
+  	  		
 	# R = Rmax case	
   	Rgrid.append(R)
-  	flux_TOA.append(spectrum)
-  	
-	#while R/exp(dlnR) >= Rmin :
+  	flux_TOA.append(spectrum)  	
+
 	while R >= Rmin :
 	
 		R = R/exp(dlnR)	
-		#Rgrid.append(R)
 		Rgrid.append(R/exp(dlnR/2.0))   # TEST
 		F[0]	= F[2]                      	       	# Derivative at i_r=1 is 0 for all energies
 		Xn[1] 	= -1.0                            		# [????] => all other XN[i] appear to be equal to 0
@@ -226,6 +256,7 @@ def Chi21D(init_pars, MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_
 
 	result = []    
 	par_IS  = init_pars[0:N_IS]
+	#print "par_IS : ", par_IS
 
 	if (MODE == "FF"):
 		par_mod = init_pars[N_IS:N_IS+Nexp]
@@ -243,7 +274,7 @@ def Chi21D(init_pars, MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_
 			par_IS_CR = par_IS[Ncr*index:Ncr+Ncr*index]
 			ndof += Ndata[i][k]
 
-			if (MODE =="FF") :
+			if (MODE == "FF") :
 				flux_TOA = Force_Field(np.array(Edata_exp[i][k]), par_IS_CR, par_mod[i], list_exp_CR[i][k])
 				result.append(np.sum(np.power((flux_TOA - flux_data_exp[i][k]) / sigma_exp[i][k] , 2)))
 
@@ -284,7 +315,7 @@ def Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Nd
 				result.append(np.sum(np.power((flux_TOA - flux_data_exp[i][k]) / sigma_exp[i][k] , 2)))
 
 			elif (MODE == "1D"):
-				Ekn_grid, flux_TOA = Model1D(np.array(Edata_exp[i][k]), Best_IS_CR, Best_mod[i], list_exp_CR[i][k])
+				Ekn_grid, flux_TOA = Model1D(np.array(Edata_exp[i][k]), Best_IS_CR, np.power(10,Best_mod[i]), list_exp_CR[i][k])
 				Ekn_grid = np.flipud(Ekn_grid) 		# Revert array to have increasing value to make interpolation
 				flux_TOA = np.flipud(flux_TOA)
 				flux_TOA_interp = np.interp(Edata_exp[i][k], Ekn_grid, flux_TOA)
@@ -296,6 +327,7 @@ def Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Nd
 	ndof -= (N_IS + Nexp)
 	result = np.array(result)
 	chi2_red = np.sum(result) / ndof
+	print "Chi2_global = ", chi2_red
 	return chi2_red, chi2_red_exp
 
 #--------------------------------
@@ -320,13 +352,16 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 
 	flux_IS = []
 	Ncr = len(Best_IS) / len(list_CR)
+	print "Best_IS",Best_IS
 
 	for i in range(0, len(list_CR)) :
 		flux_IS_tmp = []
 		Best_IS_CR = Best_IS[Ncr*i:Ncr+Ncr*i]
+		print "Best_IS_CR", Best_IS_CR
 		for k in range(0,len(E_IS)) :
 			flux_IS_tmp.append(IS_Spline_flux(E_IS[k], Best_IS_CR, list_CR[i]))
 		flux_IS.append(flux_IS_tmp)
+	print E_IS, flux_IS
 
 	flux_TOA = []   
 	for i in range(0, Nexp) :
@@ -353,6 +388,7 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 
 			elif (MODE == "1D"):	
 				Ekn_grid, flux_TOA_tmp = Model1D(np.array(E_TOA), Best_IS_CR, np.power(10,Best_mod[i]), list_exp_CR[i][k])
+				print Ekn_grid, flux_TOA_tmp
 				Ekn_grid = np.flipud(Ekn_grid)
 				flux_TOA_tmp = np.flipud(flux_TOA_tmp)
 				flux_TOA_interp = np.interp(E_TOA, Ekn_grid, flux_TOA_tmp)
@@ -367,8 +403,6 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 	#np.savetxt('test.txt', (np.transpose(all_TOA)))#,fmt='%1.4e')
 	return flux_IS, flux_TOA
 
-
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------#
 #						  	      								  CODE PRINCIPAL																#
 #-----------------------------------------------------------------------------------------------------------------------------------------------#
@@ -379,7 +413,7 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 #		1D = 1D spherical model
 #--------------------------------
 
-MODE = "1D"
+MODE = "FF"
 
 #--------------------------------
 # Data extraction :  
@@ -387,9 +421,9 @@ MODE = "1D"
 #                           Return - Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata, flux_data, sigma, date_list_mean, date_list_delta 
 #--------------------------------
 
-list_CR = ['He']
-#list_exp = RefDataset()
-list_exp = ['AMS02', 'BESS97', 'BESS00','PAMELA0608']
+list_CR = ['H','He']
+list_exp = RefDataset()
+#list_exp = ['AMS02', 'BESS97', 'BESS00','PAMELA0608']
 #list_exp = ['AMS01','AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2', 'PAMELA0608']
 Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata, flux_data, sigma, date_list_mean, date_list_delta, list_exp_CR = ExtractData(list_exp, list_CR)
 
@@ -402,6 +436,41 @@ Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata, flux_data, sigma, date_
 # - Nexp : nb of parameters for K0 (= nb of experiments, already define)
 # - InitParameters(Nexp) : Fill init_pars list with [IS flux default parameters, ..., ..., and Nexp time phi0]
 #--------------------------------------
+'''
+
+Emin_IS = 0.126
+Emax_IS = 5.e3
+
+#Best_IS = [3.8486011132, 1.93403494265, -0.471481132898, -1.3384898445, -3.02197021307, -3.86190526353] # H 
+Best_IS = [4.28655743616, 1.04497401525, -0.961104403387, -1.75375209438, -3.34606895311, -4.14137773798]
+Best_mod = [0.623936476681, 0.528795462052, 0.92673183789, 0.534770467312]
+#Best_IS = [1.8,1.,-1.,-2.3,-3.8,-4.4] 
+
+E_IS = np.logspace(log10(Emin_IS), log10(Emax_IS), num = 150)
+E_TOA = np.logspace(log10(min(Edata)), log10(max(Edata)), num = 150)
+flux_IS, flux_TOA = Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR)
+print flux_TOA
+
+#fig_all = plt.figure(figsize=(12,8))
+#fig_all.set_facecolor('white')
+#plot_IS = plt.plot(E_IS, flux_IS[0]*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
+
+for i in range(0, len(list_CR)):
+	fig_all = plt.figure(figsize=(12,8))
+	fig_all.set_facecolor('white')
+	plot_IS = plt.plot(E_IS, flux_IS[0]*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
+
+	for j in range(0,Nexp):   # Data and TOA fluxes best fits
+		plot_exp = plt.errorbar(Edata_exp[j][0], flux_data_exp[j][0]*np.power(Edata_exp[j][0], 2.), xerr = None, yerr=sigma_exp[j][0]*np.power(Edata_exp[j][0], 2), fmt='o',ms=3., label=list_exp[j])
+		col = plot_exp[0].get_color()
+		#plot_TOA = plt.plot(E_TOA, flux_TOA[j][0]*np.power(E_TOA, 2.), color = col, ls ='-',ms=3.)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
+
+sys.exit()
+'''
 
 init_pars, N_IS = InitParameters1D(MODE, Nexp, list_CR) #par_IS, par_mod, 
 bnds = SetBounds(MODE, N_IS, Nexp)
@@ -430,12 +499,15 @@ for i in range(0, Nexp):
 
 #Emin_IS = 0.1
 #Emax_IS = 1.5e3
-Emin_IS = 0.01
+Emin_IS = 0.1
 #Emin_IS = min(Emin_IS_tab)
 Emax_IS = 5.e3
 
 E_IS = np.logspace(log10(Emin_IS), log10(Emax_IS), num = 150)
 E_TOA = np.logspace(log10(min(Edata)), log10(max(Edata)), num = 150)
+
+#Best_IS = [ 5., 1.6202, -0.8229, -1.6762, -3.3307, -4.1318]
+
 flux_IS, flux_TOA = Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR)
 
 #---------------------
@@ -500,7 +572,7 @@ for i in range(0, len(list_CR)):
 			col = plot_exp[0].get_color()
 			plot_TOA = plt.plot(E_TOA, flux_TOA[j][index]*np.power(E_TOA, 2.), color = col, ls ='-',ms=3.)
 
-	SetAxis(r"$\rm{E_{k/n}[GeV/n]}$", r"$\rm{Flux [GeV/n^{-1}.m^{-2}.s^{-1}.sr^{-1}]}$", min(Edata), 1e4, 0.1, 5e5, "xylog")
+	SetAxis(r"$\rm{E_{k/n}[GeV/n]}$", r"$\rm{J \times E^2_{k/n} [GeV/n.m^{-2}.s^{-1}.sr^{-1}]}$", min(Edata), 1e4, 0.1, 5e5, "xylog")
 	SetTitle(r"Global Fit")
 	SetLegend(ncolumn = 2)
 
