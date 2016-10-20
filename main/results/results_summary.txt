@@ -1,0 +1,70 @@
+# MODELE 1D
+
+ experiments :  ['AMS01', 'AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2', 'PAMELA0608', 'PAMELA2006', 'PAMELA2007', 'PAMELA2008', 'PAMELA2009']
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: 0.755723311537
+            Iterations: 68
+            Function evaluations: 1546
+            Gradient evaluations: 68
+
+	 Minimization results : 
+
+		 Interstellar flux parameters : 
+		 c0 =  2.03778609033 +/-  0.0
+		 c1 =  1.89308870597 +/-  0.0
+		 c2 =  -0.490967337038 +/-  0.0
+		 c3 =  -1.34810660988 +/-  0.0
+		 c4 =  -3.03959382507 +/-  0.0
+		 c5 =  -3.88789137015 +/-  0.0
+		 c6 =  -4.88790501611 +/-  0.0
+		 phi( AMS01 ) =  0.344436937908 +/-  0.0 , Chi2 = 0.566772739192
+		 phi( AMS02 ) =  0.511597271588 +/-  0.0 , Chi2 = 1.94992078465
+		 phi( BESS97 ) =  0.277813594743 +/-  0.0 , Chi2 = 0.130981144552
+		 phi( BESS98 ) =  0.376734260537 +/-  0.0 , Chi2 = 0.651397702118
+		 phi( BESS99 ) =  0.45528621622 +/-  0.0 , Chi2 = 0.370282723436
+		 phi( BESS00 ) =  1.11419845509 +/-  0.0 , Chi2 = 1.46535558806
+		 phi( BESSPOLAR1 ) =  0.577096823207 +/-  0.0 , Chi2 = 1.63582053686
+		 phi( BESSPOLAR2 ) =  0.322598225961 +/-  0.0 , Chi2 = 1.83048808465
+		 phi( PAMELA0608 ) =  0.318389076833 +/-  0.0 , Chi2 = 0.442899270161
+		 phi( PAMELA2006 ) =  0.409378516715 +/-  0.0 , Chi2 = 0.377420215605
+		 phi( PAMELA2007 ) =  0.365683211118 +/-  0.0 , Chi2 = 0.195882092171
+		 phi( PAMELA2008 ) =  0.297296040996 +/-  0.0 , Chi2 = 0.223713820738
+		 phi( PAMELA2009 ) =  0.250326771561 +/-  0.0 ,Chi2 = 0.298241347365 
+
+Chi2 global =  0.744287397617
+
+# FORCE FIELD
+
+Loading experiments :  ['AMS01', 'AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2', 'PAMELA0608', 'PAMELA2006', 'PAMELA2007', 'PAMELA2008', 'PAMELA2009']
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: 0.842451406465
+            Iterations: 37
+            Function evaluations: 857
+            Gradient evaluations: 37
+
+	 Minimization results : 
+
+		 Interstellar flux parameters : 
+		 c0 =  5.36581811402 +/-  0.0
+		 c1 =  1.97051918488 +/-  0.0
+		 c2 =  -0.466934487485 +/-  0.0
+		 c3 =  -1.3295392144 +/-  0.0
+		 c4 =  -3.02472085495 +/-  0.0
+		 c5 =  -3.87093182483 +/-  0.0
+		 c6 =  -5.15554212612 +/-  0.0
+		 phi( AMS01 ) =  0.566066672421 +/-  0.0 , Chi2 = 0.557815043127
+		 phi( AMS02 ) =  0.728559089686 +/-  0.0 , Chi2 = 1.71190217695
+		 phi( BESS97 ) =  0.499949281757 +/-  0.0 , Chi2 = 0.142894401078
+		 phi( BESS98 ) =  0.597468359553 +/-  0.0 , Chi2 = 0.587789734234
+		 phi( BESS99 ) =  0.674595483364 +/-  0.0 , Chi2 = 0.312921064689
+		 phi( BESS00 ) =  1.3121670308 +/-  0.0 , Chi2 = 1.37648516191
+		 phi( BESSPOLAR1 ) =  0.791660979274 +/-  0.0 , Chi2 = 2.08595138505
+		 phi( BESSPOLAR2 ) =  0.545145683796 +/-  0.0 , Chi2 = 2.14725022059
+		 phi( PAMELA0608 ) =  0.540419606391 +/-  0.0 , Chi2 = 0.433201138021
+		 phi( PAMELA2006 ) =  0.635624892146 +/-  0.0 , Chi2 = 0.520966123832
+		 phi( PAMELA2007 ) =  0.591979687468 +/-  0.0 , Chi2 = 0.35285466587
+		 phi( PAMELA2008 ) =  0.522562623011 +/-  0.0 , Chi2 = 0.280211729752
+		 phi( PAMELA2009 ) =  0.473874847079 +/-  0.0 ,Chi2 = 0.323810640967 
+
+Chi2 global =  0.829703087578
+
