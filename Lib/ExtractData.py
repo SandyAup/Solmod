@@ -64,14 +64,17 @@ def ExtractExp(name_exp, list_CR):
 def ExtractData(list_exp, list_CR):
 # Extract data from a list of experiment
 
-    print '\n\t Loading experiments : ', list_exp
+    print '\n\t Loading experiments : ', list_exp, "\n"
     Nexperiment, Ndata, EdataB, ydataB, sigmaB, date_list_mean, date_list_delta, list_exp_CR = ExtractDataBlock(list_exp, list_CR)   
 
+    Edata, ydata, sigma = ([] for _ in xrange(3))
     for i in range(0, Nexperiment) :
-        Edata_tmp = np.hstack(EdataB[i]) ; Edata = np.hstack(Edata_tmp)
-        ydata_tmp = np.hstack(ydataB[i]) ; ydata = np.hstack(ydata_tmp)
-        sigma_tmp = np.hstack(sigmaB[i]) ; sigma = np.hstack(sigma_tmp)
+        Edata_tmp = np.hstack(EdataB[i]) ; Edata.append(Edata_tmp) 
+        ydata_tmp = np.hstack(ydataB[i]) ; ydata.append(ydata_tmp)
+        sigma_tmp = np.hstack(sigmaB[i]) ; sigma.append(sigma_tmp)
 
+    Edata = np.array(Edata) ; ydata = np.array(ydata) ; sigma = np.array(sigma)
+    Edata = np.hstack(Edata) ; ydata = np.hstack(sigma) ;  sigma = np.hstack(sigma)
     return Nexperiment, Ndata, EdataB, ydataB, sigmaB, Edata, ydata, sigma, date_list_mean, date_list_delta, list_exp_CR
 
 #--------------------------------
@@ -159,7 +162,7 @@ def SetBounds(MODE, N_IS, Nexp):
 
     return bnds
 
-
+#--------------------------------
 
 def PrintResults1D(N_IS, Nexp, list_exp, best_IS, best_phi, chi2_red, std_error, chi2):
     print '\n\t Minimization results : \n'
@@ -176,6 +179,7 @@ def PrintResults1D(N_IS, Nexp, list_exp, best_IS, best_phi, chi2_red, std_error,
     print "Chi2 global = ", chi2
     return 
 
+#--------------------------------
 
 def PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, best_IS, best_phi, chi2_red, std_error, chi2):
     print '\n\t Minimization results : \n'

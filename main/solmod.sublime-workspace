@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"True",
+				"True\tkeyword"
+			],
+			[
 				"test",
 				"test"
 			],
@@ -47,7 +51,16 @@
 			"file": "solmod.py",
 			"settings":
 			{
-				"buffer_size": 22933,
+				"buffer_size": 21884,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/PlotLib.py",
+			"settings":
+			{
+				"buffer_size": 3095,
 				"line_ending": "Unix"
 			}
 		},
@@ -63,9 +76,29 @@
 			"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
 			"settings":
 			{
-				"buffer_size": 9015,
+				"buffer_size": 9282,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Chi2_exp.txt",
+			"settings":
+			{
+				"buffer_size": 4020,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "#Experiment\t\tOnly H (phi + Chi2)\t\t\t\t\t\tOnly He (phi"
+			}
+		},
+		{
+			"file": "test_plot.py",
+			"settings":
+			{
+				"buffer_size": 6088,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "import pandas as pd"
 			}
 		}
 	],
@@ -129,6 +162,7 @@
 	],
 	"file_history":
 	[
+		"/ams/aupetit/Documents/Pheno/Solmod/main/Comparison_FF_1D_NM.py",
 		"/ams/aupetit/Documents/Pheno/Solmod/main/solmod.py",
 		"//ams/aupetit/Documents/Pheno/Code_Python/Lib/README.txt",
 		"//ams/aupetit/Documents/Pheno/Code_Python/Lib/ExtractData.py",
@@ -162,7 +196,7 @@
 	],
 	"find":
 	{
-		"height": 27.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -176,6 +210,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"+/-  0.0 , Chi2 =",
+			") =  ",
+			"phi(",
+			"AMS02",
+			"phi( AMS02",
+			"phi( ",
+			"print",
+			"TEST",
+			"KE",
+			"E0",
+			"E0m",
+			"E0",
+			"spectrum",
+			"max",
 			"par_mod",
 			"print",
 			"SetB",
@@ -230,7 +278,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -239,15 +287,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 22933,
+						"buffer_size": 21884,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								20398,
+								20398
 							]
 						],
 						"settings":
@@ -256,14 +304,43 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 9750.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/PlotLib.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3095,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1560,
+								1560
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1026.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 2,
 					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/Physics.py",
 					"semi_transient": false,
 					"settings":
@@ -275,8 +352,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								5460,
+								5460
 							]
 						],
 						"settings":
@@ -286,27 +363,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3908.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
 					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9015,
+						"buffer_size": 9282,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1374,
+								1374
 							]
 						],
 						"settings":
@@ -316,7 +393,116 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 798.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Chi2_exp.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4020,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2223,
+								2223
+							],
+							[
+								2275,
+								2275
+							],
+							[
+								2360,
+								2360
+							],
+							[
+								2446,
+								2446
+							],
+							[
+								2532,
+								2532
+							],
+							[
+								2617,
+								2617
+							],
+							[
+								2703,
+								2703
+							],
+							[
+								2791,
+								2791
+							],
+							[
+								2880,
+								2880
+							],
+							[
+								2935,
+								2935
+							],
+							[
+								2990,
+								2990
+							],
+							[
+								3045,
+								3045
+							],
+							[
+								3100,
+								3100
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#Experiment\t\tOnly H (phi + Chi2)\t\t\t\t\t\tOnly He (phi",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 627.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "test_plot.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6088,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5547,
+								5547
+							]
+						],
+						"settings":
+						{
+							"auto_name": "import pandas as pd",
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1786.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

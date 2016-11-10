@@ -10,6 +10,8 @@ from scipy.optimize import minimize
 from scipy.optimize import fmin_slsqp
 import scipy.interpolate as inter
 
+from scipy.integrate import simps
+
 import time
 import sys
 sys.path.insert(0, '/ams/aupetit/Documents/Pheno/Solmod/Lib/')
@@ -22,6 +24,7 @@ from matplotlib.dates import YearLocator, YEARLY, RRuleLocator, rrulewrapper, Da
 from matplotlib import rc
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
+
 
 np.set_printoptions(precision=4, linewidth=200)
 
@@ -37,7 +40,7 @@ def InitParameters1D(MODE, Nexp, list_CR) :
 			init_pars_H = [3.5, 1.9, -0.5, -1.3, -3., -3.8]
 			init_pars += init_pars_H
 		elif CR == 'He' :
-			init_pars_He = [1.8,1.,-1.,-2.3,-3.8,-4.4]  
+			init_pars_He = [1.8,2.2,-1.,-2.3,-3.8,-4.4]  #1.8
 			init_pars += init_pars_He
 		elif CR == 'Electron' :
 			init_pars_Elec = [1.5,0.8,-0.2,-1.,-2.,-3.0]
@@ -106,27 +109,10 @@ def Force_Field(Edata, par_IS, par_mod, name_exp_CR) :
 	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
 	AZ = float(a_cr)/float(z_cr)
 	flux_TOA = []
+	flux_IS = []
 
 	for i in range(0, len(Edata)):
 		flux_TOA.append((np.power(Edata[i],2)*a_cr + 2*mGeV*Edata[i]) / (np.power((Edata[i]+par_mod/AZ),2)*a_cr + 2*mGeV*(Edata[i]+par_mod/AZ)) * IS_Spline_flux(Edata[i]+par_mod/AZ, par_IS, name_exp_CR))
-		#flux_IS2.append(IS_Spline_flux(Edata[i], par_IS, name_exp_CR))
-		#flux_IS1.append(IS_Spline_flux(Edata[i]+z_cr*par_mod, par_IS, name_exp_CR))
-	#for i in range(0, len(E_IS)):	
-		#flux_IS2.append(IS_Spline_flux(E_IS[i], par_IS, name_exp_CR))
-		#print "Etoa : ", Edata[i], "spline : ", IS_Spline_flux(Edata[i]+par_mod, par_IS, name_exp_CR)
-
-	'''
-	fig_all = plt.figure(figsize=(12,8))
-	fig_all.set_facecolor('white')
-	plot_IS1 = plt.plot(Edata+z_cr*par_mod, flux_IS1*np.power(Edata+z_cr*par_mod, 2.), c='black', lw = 2.5, label='Interstellar flux')
-	#plot_IS2 = plt.plot(E_IS, flux_IS2*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
-	#plot_IS2 = plt.plot(Edata, flux_IS2*np.power(Edata, 2.), c='black', lw = 2.5, label='Interstellar flux')
-	plot_TOA = plt.plot(Edata, flux_TOA*np.power(Edata, 2.), c='red', lw = 2.5, label='TOA flux')
-	plt.xscale('log')
-	plt.yscale('log')
-	plt.show()
-	sys.exit()
-	'''
 
 	return np.array(flux_TOA)
 
@@ -143,7 +129,51 @@ def Momen(R, E0, AZ, par_IS, exp_CR):
   	#FLIS = 21.1*pow(T, -2.8) / (1 + 5.85*pow(T, -1.22) + 1.18*pow(T, -2.54))
 
   	FLIS = IS_Spline_flux(T, par_IS, exp_CR)
+
 	return beta, KE, T, FLIS
+
+
+#--------------------------------
+def Kdiff(par_K0, r, powr):
+
+	K = Kr(par_K0, r, powr)
+
+	if (powr == 0):
+		dKdr = 0. 
+
+	elif (powr == 1):
+		dKdr = par_K0	
+
+	elif (powr == -1):
+		dKdr = - par_K0 / pow(r,2)
+
+	elif (powr == 0.5):
+		dKdr = 0.5 * par_K0 / pow(r,0.5)
+
+	elif (powr == -0.5):
+		dKdr = 0.5 * par_K0 / pow(r,3./2)
+
+	return K, dKdr
+
+#--------------------------------
+def Kr(par_K0, r, powr):
+
+	if (powr == 0):
+		K = par_K0 							# K(r, E) = K0*beta*R  => K(r) = K0
+
+	elif (powr == 1):
+		K = par_K0 * r
+
+	elif (powr == -1):
+		K = par_K0 / r
+
+	elif (powr == 0.5):
+		K = par_K0 * pow(r,0.5)
+
+	elif (powr == -0.5):
+		K = par_K0 / pow(r,0.5)
+
+	return K
 
 #--------------------------------
 
@@ -162,13 +192,13 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 	dr = 1.0
 	
 	# Energy grid
-	R 		= Ekn_to_R(np.amax(Edata_exp), a_cr, E0, z_cr)
-	Rmin	= Ekn_to_R(np.amin(Edata_exp), a_cr, E0, z_cr)
+	R 		= Ekn_to_R(np.amax(Edata_exp), a_cr, mGeV, z_cr)
+	Rmin	= Ekn_to_R(np.amin(Edata_exp), a_cr, mGeV, z_cr)
 	dlnR	= 0.02												# Optimized value dlnR   = 0.02
 
 	# Lists and arrays initialization
 	V0 	= 1.e3 * 400. / Convert_AUperyr_to_mpers()			# Solar wind V(r) = V0 [AU/yr]
-	#Rd	= 29.
+	Rd	= 29.
   	K, V, r, dKdr, dV, F, X, Xn, Y = (np.zeros(N+1) for _ in xrange(9)) 
 	Rgrid, flux_TOA = ([] for _ in xrange(2))
 
@@ -183,23 +213,35 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 		r[i]  	= r[i-1] + dr                       # => Position r
 		V[i] 	= V0								# V(r) = cst = V0
 		dV[i]	= 2.0 * V[i] / r[i]					# 2V/r + dV/dr
-		K[i] 	= par_K0 							# K(r, E) = K0*beta*R  => K(r) = K0
-		dKdr[i] = 0. 
-		#K[i] = K0 * exp((r[i]-1.)/Rd)
+		K[i], dKdr[i] = Kdiff(par_K0, r[i], 0)
+
+
+		#K[i] 	= par_K0 							# K(r, E) = K0*beta*R  => K(r) = K0
+		#dKdr[i] = 0. 
+		# Coefficient de diffusion proportionnel a r^1
+		#K[i] 	 = par_K0 * r[i]
+		#dKdr[i] = par_K0	 
+		# Coefficient de diffusion proportionnel a r^(-1)
+		#K[i]	= par_K0 / r[i]
+		#dKdr[i]	= - par_K0 / (r[i]*r[i])
+ 		#K[i]    = par_K0 * exp((r[i]-1.)/Rd)
 		#dKdr[i] = K[i]/Rd
-  	  		
+		#K[i] 	= par_K0 / (pow(r[i],0.5))
+		#dKdr[i] = -0.5 * par_K0	 / (pow(r[i],3/2))
+  	
+
 	# R = Rmax case	
   	Rgrid.append(R)
   	flux_TOA.append(spectrum)  	
-
+  	
 	while R >= Rmin :
 	
 		R = R/exp(dlnR)	
-		Rgrid.append(R/exp(dlnR/2.0))   # TEST
+		Rgrid.append(R/exp(dlnR/2.0))   
 		F[0]	= F[2]                      	       	# Derivative at i_r=1 is 0 for all energies
 		Xn[1] 	= -1.0                            		# [????] => all other XN[i] appear to be equal to 0
 		beta, KE, T, spectrum = Momen(R/exp(dlnR/2.0), E0, AZ, par_IS, name_exp_CR)
-			
+
   		# Loop on r: calculate CN coefficient and invert tridiagonal matrix on the fly
   		for i in range(1, N):
       			
@@ -218,7 +260,6 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 			F[i] = Y[i] - X[i]*F[i+1]
   		
 		DP2 = exp(2.0*log(R/exp(dlnR)))
-		
 		flux_TOA.append(DP2 * AZ *F[2])	# r = 1 AU = r[2]
 	
 		# Write results if best fit
@@ -228,16 +269,40 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR):
 		#		results.write("%10.3e" % (DP2*AZ*F[10*i+1]))      							# dJ/dT en #/m2/s/sr/MeV
 		#	results.write("%10.3e \n" % (spectrum))
 			
-	Ekn_grid = R_to_Ekn(np.array(Rgrid), a_cr, E0, z_cr)
+	Ekn_grid = R_to_Ekn(np.array(Rgrid), a_cr, mGeV, z_cr)
 	flux_TOA = np.array(flux_TOA)
-	#print "Ekn = \n", Ekn_grid, "flux_TOA (1AU) = \n", flux_TOA
 	
 	results.close()
 	return Ekn_grid, flux_TOA
 
+
+
 #--------------------------------
 
-def Chi21D(init_pars, MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR):
+def Knorm(powr):
+
+	rb = 90. # [AU] boundary of the heliosphere	
+
+	if (powr == 0):			# K(r) = K0
+		norm = 1.
+
+	elif (powr == 1): 		# K(r) = K0*r
+		norm = 1./log(rb)	
+
+	elif (powr == -1): 		# K(r) = K0/r
+		norm = 1./(pow(rb,2)-1)
+
+	elif (powr == 0.5):  	# K(r) = K0 * sqrt(r)
+		norm = 1./(2*(sqrt(rb)-1))
+
+	elif (powr == -0.5):	# K(r) = K0 / sqrt(r)
+		norm = 3./(2.*(pow(rb, 3./2.)-1.))
+
+	return norm
+
+#--------------------------------
+
+def Chi21D(init_pars, MODE, powr, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR):
 
 	result = []    
 	par_IS  = init_pars[0:N_IS]
@@ -246,7 +311,7 @@ def Chi21D(init_pars, MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_
 	if (MODE == "FF"):
 		par_mod = init_pars[N_IS:N_IS+Nexp]
 	elif (MODE == "1D"):
-		par_mod = np.power(10,init_pars[N_IS:N_IS+Nexp])
+		par_mod = Knorm(powr) * np.power(10,init_pars[N_IS:N_IS+Nexp]) ### TEST ajouter la normalisation ici
 	
 	ndof = 0
 	Ncr = N_IS / len(list_CR)
@@ -277,7 +342,7 @@ def Chi21D(init_pars, MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_
 
 #--------------------------------
 
-def Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR , list_exp_CR):
+def Chi2_best1D(MODE, powr, Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR , list_exp_CR):
 
 	result = []
 	chi2_red_exp = []   
@@ -300,7 +365,8 @@ def Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Nd
 				result.append(np.sum(np.power((flux_TOA - flux_data_exp[i][k]) / sigma_exp[i][k] , 2)))
 
 			elif (MODE == "1D"):
-				Ekn_grid, flux_TOA = Model1D(np.array(Edata_exp[i][k]), Best_IS_CR, np.power(10,Best_mod[i]), list_exp_CR[i][k])
+				Ekn_grid, flux_TOA = Model1D(np.array(Edata_exp[i][k]), Best_IS_CR, Knorm(powr)*np.power(10,Best_mod[i]), list_exp_CR[i][k])
+				#Ekn_grid, flux_TOA = Model1D(np.array(Edata_exp[i][k]), Best_IS_CR, np.power(10,Best_mod[i]), list_exp_CR[i][k])
 				Ekn_grid = np.flipud(Ekn_grid) 		# Revert array to have increasing value to make interpolation
 				flux_TOA = np.flipud(flux_TOA)
 				flux_TOA_interp = np.interp(Edata_exp[i][k], Ekn_grid, flux_TOA)
@@ -312,15 +378,16 @@ def Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Nd
 	ndof -= (N_IS + Nexp)
 	result = np.array(result)
 	chi2_red = np.sum(result) / ndof
-	print "Chi2_global = ", chi2_red
+	#print "Chi2_global = ", chi2_red
 	return chi2_red, chi2_red_exp
 
 #--------------------------------
 
-def BestParams(MODE, Nexp, pars):
+def BestParams(MODE, powr, Nexp, pars):
 
 	Best_IS  = pars[0 : N_IS]
 	Best_mod = pars[N_IS : N_IS+Nexp]
+	#print "Best_mod", Best_mod
 
 	if (MODE == "FF"):
 		return Best_IS, Best_mod, Best_mod
@@ -328,25 +395,29 @@ def BestParams(MODE, Nexp, pars):
 	elif (MODE == "1D"):
 		Best_phi = np.zeros(Nexp)
 		for i in range(0,Nexp):
-			Best_phi[i] = 1.e3 * 400. / Convert_AUperyr_to_mpers() / (3 * np.power(10,Best_mod[i])) * (90. - 1.)
+			Npoints = 1001  # Need an odd number of points for Simpson
+			r = np.linspace(1.,90., num = Npoints) 
+			Kinv = np.zeros(Npoints)
+			for j in range(0,Npoints):
+				Kinv[j] = 1./Kr(np.power(10,Best_mod[i])*Knorm(powr), r[j], powr) 
+
+			Best_phi[i] = (1.e3 * 400. / Convert_AUperyr_to_mpers() / 3.) * simps(Kinv, r)
+
 		return Best_IS, Best_mod, Best_phi
 
 #--------------------------------
 
-def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
+def Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 
 	flux_IS = []
 	Ncr = len(Best_IS) / len(list_CR)
-	print "Best_IS",Best_IS
 
 	for i in range(0, len(list_CR)) :
 		flux_IS_tmp = []
 		Best_IS_CR = Best_IS[Ncr*i:Ncr+Ncr*i]
-		print "Best_IS_CR", Best_IS_CR
 		for k in range(0,len(E_IS)) :
 			flux_IS_tmp.append(IS_Spline_flux(E_IS[k], Best_IS_CR, list_CR[i]))
 		flux_IS.append(flux_IS_tmp)
-	print E_IS, flux_IS
 
 	flux_TOA = []   
 	for i in range(0, Nexp) :
@@ -372,8 +443,7 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 				all_TOA[index].append(flux_TOA_FF)
 
 			elif (MODE == "1D"):	
-				Ekn_grid, flux_TOA_tmp = Model1D(np.array(E_TOA), Best_IS_CR, np.power(10,Best_mod[i]), list_exp_CR[i][k])
-				print Ekn_grid, flux_TOA_tmp
+				Ekn_grid, flux_TOA_tmp = Model1D(np.array(E_TOA), Best_IS_CR, Knorm(powr)*np.power(10,Best_mod[i]), list_exp_CR[i][k])
 				Ekn_grid = np.flipud(Ekn_grid)
 				flux_TOA_tmp = np.flipud(flux_TOA_tmp)
 				flux_TOA_interp = np.interp(E_TOA, Ekn_grid, flux_TOA_tmp)
@@ -398,7 +468,12 @@ def Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR):
 #		1D = 1D spherical model
 #--------------------------------
 
-MODE = "1D"
+MODE  = "1D"
+powr  = -1		# Define the r dependence for K(r) = K0 * r^(powr). Possible values : 0, 0.5, 1, -0.5, -1.
+
+print "\n\t Performing analysis : \t", MODE, " model"
+print "\t \t \t \tDiffusion coefficient K(r) = K0 * r ^ (", powr,")"
+
 
 #--------------------------------
 # Data extraction :  
@@ -406,10 +481,11 @@ MODE = "1D"
 #                           Return - Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata, flux_data, sigma, date_list_mean, date_list_delta 
 #--------------------------------
 
-list_CR = ['He']
+list_CR = ['H']
 #list_exp = RefDataset()
-list_exp = ['AMS02', 'BESS97', 'BESS00']
+list_exp = ['AMS02', 'BESS97', 'BESS00',  'BESSPOLAR2']
 #list_exp = ['AMS01','AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2', 'PAMELA0608']
+#list_exp = ['AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2'] # Special He
 Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata, flux_data, sigma, date_list_mean, date_list_delta, list_exp_CR = ExtractData(list_exp, list_CR)
 
 # Voyager data
@@ -459,12 +535,14 @@ sys.exit()
 
 init_pars, N_IS = InitParameters1D(MODE, Nexp, list_CR) #par_IS, par_mod, 
 bnds = SetBounds(MODE, N_IS, Nexp)
-pars = fmin_slsqp(Chi21D, init_pars, bounds=bnds, args=(MODE, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR), acc=1e-03, iprint=1, iter=1000, full_output=0, epsilon=1.49e-08) 
-Best_IS, Best_mod, Best_phi = BestParams(MODE, Nexp, pars)
+pars = fmin_slsqp(Chi21D, init_pars, bounds=bnds, args=(MODE, powr, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR), acc=1e-03, iprint=1, iter=1000, full_output=0, epsilon=1.49e-08) 
+Best_IS, Best_mod, Best_phi = BestParams(MODE, powr, Nexp, pars)
 
-chi2_red, chi2_red_exp = Chi2_best1D(Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR)
+chi2_red, chi2_red_exp = Chi2_best1D(MODE, powr, Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR)
 stderr = np.zeros(N_IS+Nexp)
 #stderr = Dispersion(list_exp)
+
+print chi2_red_exp
 
 # Print best fit results	    
 PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, Best_IS, Best_phi, chi2_red_exp, stderr, chi2_red)
@@ -493,7 +571,7 @@ E_TOA = np.logspace(log10(min(Edata)), log10(max(Edata)), num = 150)
 
 #Best_IS = [ 5., 1.6202, -0.8229, -1.6762, -3.3307, -4.1318]
 
-flux_IS, flux_TOA = Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR)
+flux_IS, flux_TOA = Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR)
 
 #---------------------
 # Plot all results
@@ -546,20 +624,26 @@ SetLegend(ncolumn = 2)
 
 #Un graphe par espece
 for i in range(0, len(list_CR)):
-	fig_all = plt.figure(figsize=(12,8))
+	fig_all, ax =plt.subplots(1,1,figsize=(12,8))
+	#fig_all = plt.figure(figsize=(12,8))
 	fig_all.set_facecolor('white')
 	plot_IS = plt.plot(E_IS, flux_IS[i]*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
 
 	for j in range(0,Nexp):   # Data and TOA fluxes best fits
 		if list_CR[i] in list_exp_CR[j] :
 			index = list_exp_CR[j].index(list_CR[i])
-			plot_exp = plt.errorbar(Edata_exp[j][index], flux_data_exp[j][index]*np.power(Edata_exp[j][index], 2.), xerr = None, yerr=sigma_exp[j][index]*np.power(Edata_exp[j][index], 2), fmt='o',ms=3., label=list_exp[j] + (', $\phi$ = %.2f' % Best_phi[j]) + 'GV')
+			plot_exp = plt.errorbar(Edata_exp[j][index], flux_data_exp[j][index]*np.power(Edata_exp[j][index], 2.), xerr = None, yerr=sigma_exp[j][index]*np.power(Edata_exp[j][index], 2), fmt='o',ms=3., label=list_exp[j] + (', $\phi$ = %.2f' % Best_phi[j]) + ' GV')
 			col = plot_exp[0].get_color()
 			plot_TOA = plt.plot(E_TOA, flux_TOA[j][index]*np.power(E_TOA, 2.), color = col, ls ='-',ms=3.)
 
 	SetAxis(r"$\rm{E_{k/n}[GeV/n]}$", r"$\rm{J \times E^2_{k/n} [GeV/n.m^{-2}.s^{-1}.sr^{-1}]}$", min(Edata), 1e4, 0.1, 5e5, "xylog")
-	SetTitle(r"Global Fit")
+	#SetTitle(r"Global Fit")
 	SetLegend(ncolumn = 2)
+	
+	if (MODE == "FF"):
+		plt.annotate(r"[FF - "+ list_CR[i] + r"]", fontsize=20, xy=(0.03, 0.94), xycoords='axes fraction')
+	elif (MODE == "1D"):
+		plt.annotate(r"[1D - "+ list_CR[i] + r"]", fontsize=20, xy=(0.03, 0.94), xycoords='axes fraction')
 
 plt.show()
 
