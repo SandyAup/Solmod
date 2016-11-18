@@ -7,6 +7,7 @@ import re
 import numpy as np
 from math import *
 import datetime
+from datetime import date
 import string
 
 import sys
@@ -20,6 +21,68 @@ import os.path
 def RefDataset():
     list_exp = ['AMS01','AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2', 'PAMELA0608', 'PAMELA2006', 'PAMELA2007', 'PAMELA2008', 'PAMELA2009']
     return list_exp
+
+#--------------------------------
+
+def RefDatasetHe():
+    list_exp = ['AMS02', 'BESS97', 'BESS98', 'BESS99', 'BESS00', 'BESSPOLAR1', 'BESSPOLAR2'] 
+    return list_exp
+
+#--------------------------------
+
+def PrintInfos(list_CR, list_exp, MODE, powr):
+    print "\n\t Performing analysis"
+    print "\t ------------------- \n" 
+    print "\t \t- Cosmic ray species \t\t:", list_CR
+    print "\t \t- Experiments \t\t\t:", list_exp
+    print "\t \t- Modulation model \t\t:", MODE, "model"
+    if (MODE == "1D") : print "\t \t- Diffusion coefficient \t: K(r) = K0 * r ^ (", powr,")\n"   
+    return 0 
+
+#--------------------------------
+
+def HeaderResultsFile(MODE, powr, list_CR, list_exp):
+
+    head  = "----------------------------------------------------\n"
+    head += "\t\t\tAnalysis summary (" + str(date.today()) + ") \n"
+    head += "----------------------------------------------------\n" 
+    head += " - Cosmic ray species \t: " + " ".join(str(x) for x in list_CR) + "\n"
+    head += " - Experiments \t\t\t: " + ", ".join(str(x) for x in list_exp) + "\n"
+    head += " - Modulation model \t\t: " + MODE + " model" + "\n"
+    if (MODE == "1D") : head += " - Diffusion coefficient \t: K(r) = K0 * r ^ (" +  str(powr) + ")\n"
+    head += "----------------------------------------------------\n"  
+
+    return head
+
+#--------------------------------
+
+def HeaderResultsFileCR(MODE, powr, name_CR, list_CR, list_exp):
+
+    list_exp_CR = [] 
+    for name_exp in list_exp :
+        st = '../Data/' + name_CR + '_data/data_' + name_exp + '.dat'
+        if os.path.isfile(st)  :
+            list_exp_CR.append(name_exp)
+
+    head  = "----------------------------------------------------\n"
+    head += "\t\t\tAnalysis summary (" + str(date.today()) + ") \n"
+    head += "----------------------------------------------------\n" 
+    head += " - Cosmic ray species \t: " + " ".join(str(x) for x in list_CR) + "\n"
+    head += " - Experiments including %s date \t\t\t: " % name_CR  + ", ".join(str(x) for x in list_exp_CR) + "\n"
+    head += " - Modulation model \t\t: " + MODE + " model" + "\n"
+    if (MODE == "1D") : head += " - Diffusion coefficient \t: K(r) = K0 * r ^ (" +  str(powr) + ")\n"
+    head += "----------------------------------------------------\n"  
+
+    return head
+
+#--------------------------------
+
+def DirResultsFile(MODE, list_CR, powr):
+
+    dir = "results/" + MODE + "/" + "_".join(str(x) for x in list_CR) + "/"
+    if MODE == "1D" and powr is not 0 :
+        dir += "Kdiff/"
+    return dir
 
 #--------------------------------
 
@@ -61,10 +124,10 @@ def ExtractExp(name_exp, list_CR):
 
 #--------------------------------
 
-def ExtractData(list_exp, list_CR):
+def ExtractData(list_exp, list_CR, opt):
 # Extract data from a list of experiment
 
-    print '\n\t Loading experiments : ', list_exp, "\n"
+    #print '\n\t Loading experiments : ', list_exp, "\n"
     Nexperiment, Ndata, EdataB, ydataB, sigmaB, date_list_mean, date_list_delta, list_exp_CR = ExtractDataBlock(list_exp, list_CR)   
 
     Edata, ydata, sigma = ([] for _ in xrange(3))
@@ -75,7 +138,9 @@ def ExtractData(list_exp, list_CR):
 
     Edata = np.array(Edata) ; ydata = np.array(ydata) ; sigma = np.array(sigma)
     Edata = np.hstack(Edata) ; ydata = np.hstack(sigma) ;  sigma = np.hstack(sigma)
-    return Nexperiment, Ndata, EdataB, ydataB, sigmaB, Edata, ydata, sigma, date_list_mean, date_list_delta, list_exp_CR
+
+    if (opt == "all")   : return Nexperiment, Ndata, EdataB, ydataB, sigmaB, Edata, ydata, sigma, date_list_mean, date_list_delta, list_exp_CR
+    if (opt == "light") : return Nexperiment, Ndata, EdataB, ydataB, sigmaB, Edata
 
 #--------------------------------
 
@@ -147,18 +212,18 @@ def PrintResults(N_IS, Nexp, list_exp, best_IS, best_phi, chi2_red, std_error):
   
 #--------------------------------
 
-def SetBounds(MODE, N_IS, Nexp):
+def SetBounds(MODE, N_IS, Nexp, min_val, max_val):
     bnds = []
     for i in range(0, N_IS):
         bnds.append((-5, 5))
 
     if (MODE == "FF"):
         for i in range(0, Nexp):
-            bnds.append((0.2, 2.))
+            bnds.append((min_val, max_val))
 
     elif (MODE == "1D"):
         for i in range(0, Nexp):
-            bnds.append((2.5, 5.))
+            bnds.append((min_val, max_val))
 
     return bnds
 
@@ -182,7 +247,8 @@ def PrintResults1D(N_IS, Nexp, list_exp, best_IS, best_phi, chi2_red, std_error,
 #--------------------------------
 
 def PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, best_IS, best_phi, chi2_red, std_error, chi2):
-    print '\n\t Minimization results : \n'
+    print '\n\t Minimization results :'
+    print '\t -------------------- \n'
     print '\t\t Interstellar flux parameters : '
     for k in range (0, len(list_CR)):
             print '\n\t\t\t ', list_CR[k], 'flux :'   
@@ -193,9 +259,9 @@ def PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, best_IS, best_ph
     print "\n"
     for i in range(0,Nexp):
         if (i<Nexp-1):
-            print  '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ', Chi2 =', chi2_red[i]
+            print  '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ', Chi2 =', (chi2_red[i][j] for j in range(0,len(list_CR)))
         elif (i == Nexp-1) : 
-            print '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ',Chi2 =', chi2_red[i], '\n'
+            print '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ',Chi2 =', (chi2_red[i][j] for j in range(0,len(list_CR))), '\n'
     print "Chi2 global = ", chi2
     return 
     
