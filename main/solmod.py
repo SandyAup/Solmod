@@ -168,10 +168,10 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR, powr):
 	AZ = float(a_cr)/float(z_cr)
 
 	# Space grid
-	N = 91		# TEST
-	dr = 1.0
-	#N = 182
-	#dr = 0.5
+	#N = 91		
+	#dr = 1.0
+	N = 182
+	dr = 0.5
 	
 	# Energy grid
 	R 		= Ekn_to_R(np.amax(Edata_exp), a_cr, mGeV, z_cr)
@@ -228,8 +228,8 @@ def Model1D(Edata_exp, par_IS, par_K0, name_exp_CR, powr):
 			F[i] = Y[i] - X[i]*F[i+1]
   		
 		DP2 = exp(2.0*log(R/exp(dlnR)))
-		flux_TOA.append(DP2 * AZ *F[2])		# r = 1 AU = r[2]
-		#flux_TOA.append(DP2 * AZ *F[3])		# r = 1 AU = r[2]		# TEST
+		#flux_TOA.append(DP2 * AZ *F[2])		# r = 1 AU = r[2]
+		flux_TOA.append(DP2 * AZ *F[3])		# r = 1 AU = r[2]		# TEST
 	
 		# Write results if best fit
 		#if (res == 1):
@@ -480,7 +480,7 @@ def Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR,
 					all_TOA.append(flux_TOA_FF)
 
 				elif (MODE == "1D"):	
-					Ekn_grid, flux_TOA_tmp = Model1D(np.array(E_TOA), Best_IS_CR, np.power(10,Best_mod[i]), list_CR[i], powr)
+					Ekn_grid, flux_TOA_tmp = Model1D(np.array(E_TOA), Best_IS_CR, np.power(10,Best_mod[j]), list_CR[i], powr)
 					Ekn_grid = np.flipud(Ekn_grid) ; flux_TOA_tmp = np.flipud(flux_TOA_tmp)
 					flux_TOA_interp = np.interp(E_TOA, Ekn_grid, flux_TOA_tmp) ; flux_TOA_interp = flux_TOA_interp.tolist()
 					flux_TOA[j].append(flux_TOA_interp)
@@ -508,8 +508,8 @@ def Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR,
 list_CR 	= ['H','He']
 #list_exp 	= ['AMS02', 'BESS00', 'PAMELA2008']
 list_exp 	= RefDataset()
-MODE  		= "FF"
-powr  		= 0
+MODE  		= "1D"
+powr  		= 0.5
 SAVE 		= True 
 PrintInfos(list_CR, list_exp, MODE, powr)
 
@@ -549,14 +549,13 @@ sys.exit()
 # - InitParameters(Nexp) : Fill init_pars list with [IS flux default parameters, ..., ..., and Nexp time phi0]
 
 init_pars, N_IS, min_val, max_val = InitParameters1D(MODE, powr, Nexp, list_CR)
-bnds = SetBounds(MODE, N_IS, Nexp, min_val, max_val)
 
-pars = fmin_slsqp(Chi21D, init_pars, bounds=bnds, args=(MODE, powr, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR), acc=1e-03, iprint=1, iter=1000, full_output=0, epsilon=1.49e-05) 
+bnds  = SetBounds(MODE, N_IS, Nexp, min_val, max_val)
+pars  = fmin_slsqp(Chi21D, init_pars, bounds=bnds, args=(MODE, powr, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR), acc=1e-03, iprint=1, iter=1000, full_output=0, epsilon=1.49e-05) 
 
 Best_IS, Best_mod, Best_phi = BestParams(MODE, powr, Nexp, pars)
-
-chi2_red, chi2_red_exp = Chi2_best1D(MODE, powr, Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR)
-stderr = np.zeros(N_IS+Nexp)
+chi2_red, chi2_red_exp 		= Chi2_best1D(MODE, powr, Best_IS, Best_mod, Edata_exp, flux_data_exp, sigma_exp, Nexp, Ndata, N_IS, list_CR, list_exp_CR)
+stderr 						= np.zeros(N_IS+Nexp)
 
 
 
@@ -582,7 +581,7 @@ if (MODE == "FF"):
 	filename_phi += ".txt" 
 elif (MODE == "1D"): 
 	stK = str(powr)
-	if (powr == 0) : filename_phi += "_K" + stK.replace(".", "_") + ".txt"
+	if (powr is not 0) : filename_phi += "_K" + stK.replace(".", "_") + ".txt"
 	else : filename_phi += ".txt" 
 
 all_phi = [np.array(list_exp), Best_phi]
@@ -735,42 +734,3 @@ SetTitle(r"Best $\phi$ values vs $\chi^2$")
 #print("--- %s seconds ---" % (time.time() - start_time))
 #sys.exit() 
 
-
-
-
-
-'''
-
-Emin_IS = 0.126
-Emax_IS = 5.e3
-
-#Best_IS = [3.8486011132, 1.93403494265, -0.471481132898, -1.3384898445, -3.02197021307, -3.86190526353] # H 
-Best_IS = [4.28655743616, 1.04497401525, -0.961104403387, -1.75375209438, -3.34606895311, -4.14137773798]
-Best_mod = [0.623936476681, 0.528795462052, 0.92673183789, 0.534770467312]
-#Best_IS = [1.8,1.,-1.,-2.3,-3.8,-4.4] 
-
-E_IS = np.logspace(log10(Emin_IS), log10(Emax_IS), num = 150)
-E_TOA = np.logspace(log10(min(Edata)), log10(max(Edata)), num = 150)
-flux_IS, flux_TOA = Best_Fit1D(MODE, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR)
-print flux_TOA
-
-#fig_all = plt.figure(figsize=(12,8))
-#fig_all.set_facecolor('white')
-#plot_IS = plt.plot(E_IS, flux_IS[0]*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
-
-for i in range(0, len(list_CR)):
-	fig_all = plt.figure(figsize=(12,8))
-	fig_all.set_facecolor('white')
-	plot_IS = plt.plot(E_IS, flux_IS[0]*np.power(E_IS, 2.), c='black', lw = 2.5, label='Interstellar flux')
-
-	for j in range(0,Nexp):   # Data and TOA fluxes best fits
-		plot_exp = plt.errorbar(Edata_exp[j][0], flux_data_exp[j][0]*np.power(Edata_exp[j][0], 2.), xerr = None, yerr=sigma_exp[j][0]*np.power(Edata_exp[j][0], 2), fmt='o',ms=3., label=list_exp[j])
-		col = plot_exp[0].get_color()
-		#plot_TOA = plt.plot(E_TOA, flux_TOA[j][0]*np.power(E_TOA, 2.), color = col, ls ='-',ms=3.)
-
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
-
-sys.exit()
-'''

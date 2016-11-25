@@ -68,7 +68,7 @@ def HeaderResultsFileCR(MODE, powr, name_CR, list_CR, list_exp):
     head += "\t\t\tAnalysis summary (" + str(date.today()) + ") \n"
     head += "----------------------------------------------------\n" 
     head += " - Cosmic ray species \t: " + " ".join(str(x) for x in list_CR) + "\n"
-    head += " - Experiments including %s date \t\t\t: " % name_CR  + ", ".join(str(x) for x in list_exp_CR) + "\n"
+    head += " - Experiments (%s data)\t: " % name_CR  + ", ".join(str(x) for x in list_exp_CR) + "\n"
     head += " - Modulation model \t\t: " + MODE + " model" + "\n"
     if (MODE == "1D") : head += " - Diffusion coefficient \t: K(r) = K0 * r ^ (" +  str(powr) + ")\n"
     head += "----------------------------------------------------\n"  
