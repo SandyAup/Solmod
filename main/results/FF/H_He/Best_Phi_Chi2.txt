@@ -1,0 +1,16 @@
+# ----------------------------------------------------
+# 			Analysis summary (2016-11-24) 
+# ----------------------------------------------------
+#  - Cosmic ray species 	: H He
+#  - Experiments 			: AMS02, BESS00, PAMELA2008
+#  - Modulation model 		: FF model
+# ----------------------------------------------------
+# Column 1 : Experiment 
+# Column 2 : Best phi [GV] 
+# Column 3 : Reduced Chi-square (H) / experiment
+# Column 4 : Reduced Chi-square (He) / experiment
+# 
+AMS02       	0.610029496486	0.828767287311	0.0945387956699
+BESS00      	1.19483287203	0.762879378883	0.58063935115
+PAMELA2008  	0.381729774121	0.572800894259	0.0         
+# Global Chi-square (/ndof) : 0.57
