@@ -15,7 +15,8 @@ from datetime import datetime
 
 import time
 import sys
-sys.path.insert(0, '/ams/aupetit/Documents/Pheno/Solmod/Lib/')
+#sys.path.insert(0, '/ams/aupetit/Documents/Pheno/Solmod/Lib/')
+sys.path.insert(0, '../Lib/')
 from Physics import *
 from ExtractData import *
 from PlotLib import *
@@ -104,7 +105,8 @@ def ExtractDate(name_exp_list, list_CR):
 #---------------------------------------------------------------
 def main():
 
-	directory	= "/ams/aupetit/Documents/Pheno/Solmod/main/results/"
+	#directory	= "/ams/aupetit/Documents/Pheno/Solmod/main/results/"
+	directory	= "results/"
 
 	list_CR 	= ['H','He']
 	#list_exp 	= ['AMS02', 'BESS00', 'PAMELA2008']
