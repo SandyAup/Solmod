@@ -28,6 +28,79 @@ rc('text', usetex=True)
 
 np.set_printoptions(precision=4, linewidth=200)
 
+print "[Import libraries ...]"
+
+#---------------------------------------------------------------
+
+def ExtractDataDict(list_exp, list_CR): 
+    # Extract data from a list of experiment and put it in an array 
+    # Return an "array of arrays"
+    
+    Nexperiment = len(list_exp)
+    Ndata = []
+    list_exp_CR = []
+    dict_Data = {}
+
+    count = 0    
+    for name_exp in list_exp :
+
+    	Nexp, Eexp, yexp, sigmaexp, exp_CR = ExtractExp(name_exp, list_CR)
+    	for i in range(0, len(exp_CR)):
+			dict_Data["Edata_%s_%s" % (exp_CR[i],name_exp)] = Eexp[i] 
+			dict_Data["ydata_%s_%s" % (exp_CR[i],name_exp)] = yexp[i]
+			dict_Data["sigma_%s_%s" % (exp_CR[i],name_exp)] = sigmaexp[i]
+			list_exp_CR.append(exp_CR)
+			Ndata.append(Nexp)
+
+    #date_list_mean, date_list_delta = ExtractDate(list_exp, list_CR)
+     
+    #return Nexperiment, Ndata, Edata, ydata, sigma, date_list_mean, date_list_delta, list_exp_CR
+    return Nexperiment, Ndata, dict_Data, list_exp_CR #date_list_mean, date_list_delta,
+
+#---------------------------------------------------------------
+'''
+def ExtractDate(name_exp_list, list_CR):
+ 
+    date_list_mean = []
+    date_list_delta = []
+
+    for name_exp in name_exp_list :
+
+        st = []
+
+        if "AMS" in name_exp and name_exp != "AMS02" and name_exp != "AMS01" :
+            st.append('../Data/AMS/data_' + name_exp + '.dat')
+        elif "PAMELA" in name_exp and not "PAMELA200" in name_exp and not "PAMELA0608" in name_exp :
+            st.append('../Data/PAMELA/data_' + name_exp + '.dat')
+        else :
+            for i in range(0, len(list_CR)):
+                st.append('../Data/' + list_CR[i] + '_data/data_' + name_exp + '.dat')
+
+        Ncr = 0
+        for i in range(0, len(list_CR)):
+
+            if os.path.isfile(st[i])  :
+
+                Ncr += 1
+                date_beg, date_end = ReadDates(st[i])
+                date_mean = date_beg + (date_end - date_beg)/2
+                date_delta = (date_end - date_beg) / 2
+
+                if Ncr == 1 :
+                    date_mean_tmp = [date_mean] ; date_delta_tmp = [date_delta] ;
+
+                else :
+                    date_mean_tmp.append(date_mean) ; date_delta_tmp.append(date_delta) ;
+
+        date_list_mean.append(date_mean_tmp)
+        date_list_delta.append(date_delta_tmp)
+
+    date_list_mean = np.array(date_list_mean)  
+    date_list_delta = np.array(date_list_delta)
+    
+    return date_list_mean, date_list_delta
+'''
+
 #---------------------------------------------------------------
 def main():
 
@@ -36,10 +109,18 @@ def main():
 	list_CR 	= ['H','He']
 	#list_exp 	= ['AMS02', 'BESS00', 'PAMELA2008']
 	list_exp 	= RefDataset()
-	MODE  		= "FF"
+	MODE  		= "1D"
 	powr  		= 0
 
-	Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata = ExtractData(list_exp, list_CR, "light")
+	Nexp, Ndata, dict_Data, list_exp_CR = ExtractDataDict(list_exp, list_CR)
+	#print Ndata
+	#print dict_Data
+	#print dict_Data["Edata_%s_%s" % (list_CR[0],'AMS02')]
+	#print dict_Data["ydata_%s_%s" % (list_CR[0],'AMS02')]
+	#print dict_Data["sigma_%s_%s" % (list_CR[0],'AMS02')]
+	#print list_exp_CR
+
+	#Nexp, Ndata, Edata_exp, flux_data_exp, sigma_exp, Edata = ExtractData(list_exp, list_CR, "light")
 
 	if (MODE == "FF") :	directory += MODE + "/" + "_".join(list_CR[i] for i in xrange(len(list_CR))) + "/"
 	elif (MODE == "1D") :
@@ -89,7 +170,7 @@ def main():
 	list_exp_red = []
 
 	for i in xrange(len(list_CR)) :
-		print directory + filename_TOA[i]
+		#print directory + filename_TOA[i]
 		search_exp = open(directory + filename_TOA[i])
 		for l in search_exp :
 			if "Experiment" in l : line = l		
@@ -104,9 +185,22 @@ def main():
 		for j in xrange(len(list_exp_red[i])) :
 			dict_TOA["TOAFlux_%s_%s" % (list_CR[i], list_exp_red[i][j])] = file_TOA[i][:,j+1]
 
-	print dict_TOA["E_TOA_H"]
+	#------------------------------------------
+	# Loading Best phi for each experiment
+	#------------------------------------------
 
-	#sys.exit()
+	print (directory + "Best_Phi_Chi2.txt")
+	file_Results = np.loadtxt(directory + "Best_Phi_Chi2.txt", usecols=[1,2,3])
+	dict_Results = {}
+
+	print file_Results
+	for i in range(0, len(list_exp)):
+		print file_Results[i,0], file_Results[i,1]
+		dict_Results["BestPhi_%s" % list_exp[i]] = file_Results[i,0]
+		dict_Results["Chi2_H_%s"  % list_exp[i]] = file_Results[i,1]
+		dict_Results["Chi2_He_%s" % list_exp[i]] = file_Results[i,2]
+
+	print dict_Results
 
 	#------------------------------------------
 	# One plot for each species
@@ -126,9 +220,14 @@ def main():
 
 		# DATA + TOA FLUXES
 		#--------------------
+		#for j in xrange(len(list_exp_red[i])) :
+			#print list_CR[i],list_exp_red[i][j]
+
 		for j in xrange(len(list_exp_red[i])) :
-			print list_CR[i],list_exp_red[i][j]
-			plot_TOA = plt.plot(dict_TOA["E_TOA_%s" % list_CR[i]], dict_TOA["TOAFlux_%s_%s" % (list_CR[i], list_exp_red[i][j])]*np.power(dict_TOA["E_TOA_%s" % list_CR[i]], 2.), ls ='-',ms=3.) # color = col
+			plot_exp = plt.errorbar(dict_Data["Edata_%s_%s" % (list_CR[i],list_exp_red[i][j])], dict_Data["ydata_%s_%s" % (list_CR[i],list_exp_red[i][j])]*np.power(dict_Data["Edata_%s_%s" % (list_CR[i],list_exp_red[i][j])], 2.), xerr = None, yerr=dict_Data["sigma_%s_%s" % (list_CR[i],list_exp_red[i][j])]*np.power(dict_Data["Edata_%s_%s" % (list_CR[i],list_exp_red[i][j])], 2), fmt='o',ms=3., label=list_exp[j] + (', $\phi$ = %.2f' % dict_Results["BestPhi_%s" % list_exp[j]]) + ' GV')
+			col = plot_exp[0].get_color()
+			plot_TOA = plt.plot(dict_TOA["E_TOA_%s" % list_CR[i]], dict_TOA["TOAFlux_%s_%s" % (list_CR[i], list_exp_red[i][j])]*np.power(dict_TOA["E_TOA_%s" % list_CR[i]], 2.), ls ='-',ms=3., color = col) # color = col
+
 
 		'''
 		for j in range(0,Nexp):  
@@ -139,7 +238,9 @@ def main():
 				#plot_TOA = plt.plot(E_TOA, flux_TOA[j][index]*np.power(E_TOA, 2.), color = col, ls ='-',ms=3.)
 		'''
 
-		SetAxis(r"$\rm{E_{k/n}[GeV/n]}$", r"$\rm{J \times E^2_{k/n} [GeV/n.m^{-2}.s^{-1}.sr^{-1}]}$", min(Edata), 1e4, 0.1, 5e5, "xylog")
+		if   list_CR[i] == "H"  : Emin = 1.e-1 ; Emax = 1.e4 ; ymin = 0.1 ; ymax = 5.e4
+		elif list_CR[i] == "He" : Emin = 1.e-1 ; Emax = 1.e4 ; ymin = 0.1 ; ymax = 5.e3
+		SetAxis(r"$\rm{E_{k/n}[GeV/n]}$", r"$\rm{J \times E^2_{k/n} [GeV/n.m^{-2}.s^{-1}.sr^{-1}]}$", Emin, Emax, ymin, ymax, "xylog")
 		SetLegend(ncolumn = 2)
 		
 		if (MODE == "FF"):

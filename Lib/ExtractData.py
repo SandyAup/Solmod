@@ -330,3 +330,45 @@ def ReadDates(file_name):
 
     return date_beg, date_end
 
+
+#---------------------------------------------------------------
+
+def ExtractExpDict(name_exp, list_CR): 
+    # Extract data from one experiment file 
+
+    st = []
+
+    if "AMS" in name_exp and name_exp != "AMS02" and name_exp != "AMS01" :
+        st.append('../Data/AMS/data_' + name_exp + '.dat')
+    elif "PAMELA" in name_exp and not "PAMELA200" in name_exp and not "PAMELA0608" in name_exp :
+        st.append('../Data/PAMELA/data_' + name_exp + '.dat')
+    else :
+        for i in range(0, len(list_CR)):
+            st.append('../Data/' + list_CR[i] + '_data/data_' + name_exp + '.dat')
+
+    Ncr = 0
+    list_exp_CR =[]
+    dict_Data = {}
+
+    for i in range(0, len(list_CR)):
+
+        if os.path.isfile(st[i])  :
+            Ncr += 1
+            list_exp_CR.append(list_CR[i])
+
+            data_tmp      = np.loadtxt(st[i])
+            dict_Data["Edata_%s_%s" % (list_CR[i],name_exp)] = data_tmp[:,0]
+            dict_Data["ydata_%s_%s" % (list_CR[i],name_exp)] = data_tmp[:,3]
+            dict_Data["sigma_%s_%s" % (list_CR[i],name_exp)] = data_tmp[:,9]
+            Ndata_tmp = dict_Data["Edata_%s_%s" % (list_CR[i],name_exp)].size
+
+            print dict_Data
+            print Ndata_tmp
+
+            if Ncr == 1 :
+                Ndata = [Ndata_tmp]
+            else :
+                Ndata.append(Ndata_tmp)
+
+    return Ndata, dict_Data, list_exp_CR
+    
