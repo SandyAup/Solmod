@@ -371,4 +371,30 @@ def ExtractExpDict(name_exp, list_CR):
                 Ndata.append(Ndata_tmp)
 
     return Ndata, dict_Data, list_exp_CR
+ 
+#---------------------------------------------------------------  
+
+def ExtractDataDict(list_exp, list_CR): 
+    # Extract data from a list of experiment and put it in an array 
+    # Return an "array of arrays"
     
+    Nexperiment = len(list_exp)
+    Ndata = []
+    list_exp_CR = []
+    dict_Data = {}
+
+    count = 0    
+    for name_exp in list_exp :
+
+        Nexp, Eexp, yexp, sigmaexp, exp_CR = ExtractExp(name_exp, list_CR)
+        for i in range(0, len(exp_CR)):
+            dict_Data["Edata_%s_%s" % (exp_CR[i],name_exp)] = Eexp[i] 
+            dict_Data["ydata_%s_%s" % (exp_CR[i],name_exp)] = yexp[i]
+            dict_Data["sigma_%s_%s" % (exp_CR[i],name_exp)] = sigmaexp[i]
+            list_exp_CR.append(exp_CR)
+            Ndata.append(Nexp)
+
+    #date_list_mean, date_list_delta = ExtractDate(list_exp, list_CR)
+     
+    #return Nexperiment, Ndata, Edata, ydata, sigma, date_list_mean, date_list_delta, list_exp_CR
+    return Nexperiment, Ndata, dict_Data, list_exp_CR #date_list_mean, date_list_delta,

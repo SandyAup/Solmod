@@ -472,7 +472,7 @@ def Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR,
 
 			st = "../Data/" + list_CR[i] + "_data/data_" + list_exp[j] + ".dat"
 			if os.path.isfile(st) :
-				header_TOA += ("Column %i : " % (i+2)) + "Flux_TOA(" + list_exp[j] + ")\n"
+				header_TOA += ("Column %i : " % (j+2)) + "Flux_TOA(" + list_exp[j] + ")\n"
 
 				if (MODE == "FF"):
 					flux_TOA_FF = Force_Field(np.array(E_TOA), Best_IS_CR, Best_mod[j], list_CR[i])
@@ -508,8 +508,8 @@ def Best_Fit1D(MODE, powr, E_IS, E_TOA, Best_IS, Best_mod, list_CR, list_exp_CR,
 list_CR 	= ['H','He']
 #list_exp 	= ['AMS02', 'BESS00', 'PAMELA2008']
 list_exp 	= RefDataset()
-MODE  		= "1D"
-powr  		= 0.5
+MODE  		= "FF"
+powr  		= 0
 SAVE 		= True 
 PrintInfos(list_CR, list_exp, MODE, powr)
 

@@ -9,7 +9,7 @@ rc('text', usetex=True)
 
 #---------------------------------------------------------------
 def SetFig ():
-	fig = plt.figure(figsize=(8,5))
+	fig = plt.figure(figsize=(10,8))
 	fig.set_facecolor('white')
 	return fig
 
@@ -80,8 +80,8 @@ def SetDateAxis(ax, form):
 	plt.tight_layout()
 
 #---------------------------------------------------------------
-def SetLegend(ncolumn = 1):
-	plt.legend(ncol = ncolumn, numpoints = 1,frameon=False)
+def SetLegend(localisation = 1, ncolumn = 1):
+	plt.legend(loc = localisation, ncol = ncolumn, numpoints = 1,frameon=False)
 	leg = plt.gca().get_legend()
  	ltext  = leg.get_texts()            
 	plt.setp(ltext, fontsize='xx-large')    # the legend text fontsize 
