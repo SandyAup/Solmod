@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"list_exp",
+				"list_exp_red"
+			],
+			[
+				"filena",
+				"filename_TOA"
+			],
+			[
 				"True",
 				"True\tkeyword"
 			],
@@ -13,10 +21,6 @@
 			],
 			[
 				"list_CR",
-				"list_exp_CR"
-			],
-			[
-				"list_exp",
 				"list_exp_CR"
 			],
 			[
@@ -51,7 +55,50 @@
 			"file": "solmod.py",
 			"settings":
 			{
-				"buffer_size": 23725,
+				"buffer_size": 27074,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
+			"settings":
+			{
+				"buffer_size": 14455,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "results/FF/H_He/Best_Phi_Chi2.txt",
+			"settings":
+			{
+				"buffer_size": 1341,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "results/1D/H_He/ISFlux_H_He.txt",
+			"settings":
+			{
+				"buffer_size": 11789,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pCompPhi_FF1D.py",
+			"settings":
+			{
+				"buffer_size": 4088,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Comparison_FF_1D_NM.py",
+			"settings":
+			{
+				"buffer_size": 9793,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -60,7 +107,8 @@
 			"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/PlotLib.py",
 			"settings":
 			{
-				"buffer_size": 3095,
+				"buffer_size": 3134,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -73,22 +121,29 @@
 			}
 		},
 		{
-			"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
+			"file": "plot_BestFit.py",
 			"settings":
 			{
-				"buffer_size": 9854,
+				"buffer_size": 8092,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Chi2_exp.txt",
+			"file": "plot_Residuals.py",
 			"settings":
 			{
-				"buffer_size": 4020,
+				"buffer_size": 8662,
 				"encoding": "UTF-8",
-				"line_ending": "Unix",
-				"name": "#Experiment\t\tOnly H (phi + Chi2)\t\t\t\t\t\tOnly He (phi"
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "results/1D/H_He/TOAFlux_H.txt",
+			"settings":
+			{
+				"buffer_size": 53413,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -147,14 +202,28 @@
 	"expanded_folders":
 	[
 		"/ams/aupetit/Documents/Pheno/Solmod/Lib",
-		"/ams/aupetit/Documents/Pheno/Solmod/Data",
-		"/ams/aupetit/Documents/Pheno/Solmod/main"
+		"/ams/aupetit/Documents/Pheno/Solmod/main",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/Macro_Plots_Old",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/1D",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/1D/H_He",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF/H_He"
 	],
 	"file_history":
 	[
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/1D/H_He/Best_Phi_Chi2.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF/H_He/ISFlux_H_He.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/1D/H_He/ISFlux_H_He.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
+		"/ams/aupetit/Documents/Pheno/Solmod/Data/H_data/data_AMS02.dat",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF/H_He/Best_Phi_Chi2.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/Chi2_exp.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF/H_He/TOAFlux_He.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/results/FF/H_He/TOAFlux_H.txt",
+		"/ams/aupetit/Documents/Pheno/Solmod/main/solmod.py",
 		"/ams/aupetit/Documents/Pheno/Solmod/main/test_plot.py",
 		"/ams/aupetit/Documents/Pheno/Solmod/main/Comparison_FF_1D_NM.py",
-		"/ams/aupetit/Documents/Pheno/Solmod/main/solmod.py",
 		"//ams/aupetit/Documents/Pheno/Code_Python/Lib/README.txt",
 		"//ams/aupetit/Documents/Pheno/Code_Python/Lib/ExtractData.py",
 		"//ams/aupetit/Documents/Pheno/Code_Python/Lib/PlotLib.py",
@@ -187,7 +256,7 @@
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 38.0
 	},
 	"find_in_files":
 	{
@@ -201,6 +270,30 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"ExtractDataDic",
+			"data",
+			"list_exp_red",
+			"Column",
+			"File",
+			"Save",
+			"Kdiff",
+			"ISFlu",
+			"loadtxt",
+			"e3",
+			"list_exp_CR",
+			"sys",
+			"Edata",
+			"ExtractDate",
+			"ExtractE",
+			"He",
+			"TEST",
+			"list_exp_CR",
+			"ExtractData",
+			"find",
+			"join",
+			"print fil",
+			"SAVE",
+			"N_IS",
 			"TEST",
 			"powr",
 			"Knorm",
@@ -295,15 +388,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 23725,
+						"buffer_size": 27074,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6815,
-								6815
+								20325,
+								20325
 							]
 						],
 						"settings":
@@ -312,7 +405,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2793.0,
+						"translation.y": 4161.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -320,19 +413,133 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/PlotLib.py",
+					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3095,
+						"buffer_size": 14455,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1560,
-								1560
+								9481,
+								9481
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4279.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "results/FF/H_He/Best_Phi_Chi2.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1341,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1341,
+								1341
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "results/1D/H_He/ISFlux_H_He.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11789,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "pCompPhi_FF1D.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4088,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1368,
+								1368
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 171.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Comparison_FF_1D_NM.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9793,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4071,
+								4071
 							]
 						],
 						"settings":
@@ -341,14 +548,43 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 903.0,
+						"translation.y": 4161.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 6,
+					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/PlotLib.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3134,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								180,
+								180
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/Physics.py",
 					"semi_transient": false,
 					"settings":
@@ -374,115 +610,93 @@
 						"translation.y": 3908.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "/ams/aupetit/Documents/Pheno/Solmod/Lib/ExtractData.py",
+					"buffer": 8,
+					"file": "plot_BestFit.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9854,
+						"buffer_size": 8092,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5795,
-								5795
+								7614,
+								7614
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2719.0,
+						"translation.y": 3499.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "Chi2_exp.txt",
+					"buffer": 9,
+					"file": "plot_Residuals.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4020,
+						"buffer_size": 8662,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2223,
-								2223
-							],
-							[
-								2275,
-								2275
-							],
-							[
-								2360,
-								2360
-							],
-							[
-								2446,
-								2446
-							],
-							[
-								2532,
-								2532
-							],
-							[
-								2617,
-								2617
-							],
-							[
-								2703,
-								2703
-							],
-							[
-								2791,
-								2791
-							],
-							[
-								2880,
-								2880
-							],
-							[
-								2935,
-								2935
-							],
-							[
-								2990,
-								2990
-							],
-							[
-								3045,
-								3045
-							],
-							[
-								3100,
-								3100
+								2240,
+								2240
 							]
 						],
 						"settings":
 						{
-							"auto_name": "#Experiment\t\tOnly H (phi + Chi2)\t\t\t\t\t\tOnly He (phi",
-							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax": "Packages/Python/Python.sublime-syntax",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 190.0,
+						"translation.y": 3819.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "results/1D/H_He/TOAFlux_H.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 53413,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1668,
+								1668
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
 					"type": "text"
 				}
 			]

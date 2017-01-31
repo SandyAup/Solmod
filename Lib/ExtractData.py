@@ -259,9 +259,9 @@ def PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, best_IS, best_ph
     print "\n"
     for i in range(0,Nexp):
         if (i<Nexp-1):
-            print  '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ', Chi2 =', (chi2_red[i][j] for j in range(0,len(list_CR)))
+            print  '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ', Chi2 =', [chi2_red[j][i] for j in range(0,len(list_CR))]
         elif (i == Nexp-1) : 
-            print '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ',Chi2 =', (chi2_red[i][j] for j in range(0,len(list_CR))), '\n'
+            print '\t\t phi(', list_exp[i], ') = ', best_phi[i], '+/- ', std_error[N_IS + i], ',Chi2 =', [chi2_red[j][i] for j in range(0,len(list_CR))], '\n'
     print "Chi2 global = ", chi2
     return 
     

@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# 			Analysis summary (2016-12-16) 
+# 			Analysis summary (2017-01-05) 
 # ----------------------------------------------------
 #  - Cosmic ray species 	: H He
 #  - Experiments (He data)	: AMS02, BESS97, BESS98, BESS99, BESS00, BESSPOLAR1, BESSPOLAR2
@@ -7,12 +7,12 @@
 # ----------------------------------------------------
 # Column 1 : E_TOA
 # Column 3 : Flux_TOA(AMS02)
-# Column 3 : Flux_TOA(BESS97)
-# Column 3 : Flux_TOA(BESS98)
-# Column 3 : Flux_TOA(BESS99)
-# Column 3 : Flux_TOA(BESS00)
-# Column 3 : Flux_TOA(BESSPOLAR1)
-# Column 3 : Flux_TOA(BESSPOLAR2)
+# Column 4 : Flux_TOA(BESS97)
+# Column 5 : Flux_TOA(BESS98)
+# Column 6 : Flux_TOA(BESS99)
+# Column 7 : Flux_TOA(BESS00)
+# Column 8 : Flux_TOA(BESSPOLAR1)
+# Column 9 : Flux_TOA(BESSPOLAR2)
 # 
 8.806899999999999451e-02 1.503053514224025946e+02 3.067111967227984906e+02 2.187933503073407451e+02 1.676885559937087464e+02 3.607648640178712185e+01 1.283754772151793873e+02 2.880107380241647661e+02
 9.478292164299262357e-02 1.559251255593035808e+02 3.151739412896503154e+02 2.259114673384539174e+02 1.737316656500902354e+02 3.792219669504102342e+01 1.334142289356347817e+02 2.962354617573725477e+02

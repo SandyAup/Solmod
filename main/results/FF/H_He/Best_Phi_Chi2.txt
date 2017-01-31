@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# 			Analysis summary (2016-12-16) 
+# 			Analysis summary (2017-01-05) 
 # ----------------------------------------------------
 #  - Cosmic ray species 	: H He
 #  - Experiments 			: AMS01, AMS02, BESS97, BESS98, BESS99, BESS00, BESSPOLAR1, BESSPOLAR2, PAMELA0608, PAMELA2006, PAMELA2007, PAMELA2008, PAMELA2009

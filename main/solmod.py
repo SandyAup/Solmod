@@ -510,7 +510,7 @@ list_CR 	= ['H','He']
 list_exp 	= RefDataset()
 MODE  		= "FF"
 powr  		= 0
-SAVE 		= True 
+SAVE 		= False 
 PrintInfos(list_CR, list_exp, MODE, powr)
 
 # -----------------
@@ -585,8 +585,8 @@ elif (MODE == "1D"):
 	else : filename_phi += ".txt" 
 
 all_phi = [np.array(list_exp), Best_phi]
-print all_phi
-print (np.transpose(all_phi))
+#print all_phi
+#print (np.transpose(all_phi))
 for i in range(0, len(list_CR)) : all_phi.append(np.array(chi2_red_exp[i]))
 
 if (SAVE == True) :  np.savetxt(directory+filename_phi, (np.transpose(all_phi)), fmt="%-12s", delimiter= "\t", header=header_phi, footer=footer_phi)
@@ -598,6 +598,7 @@ if (SAVE == True) :  np.savetxt(directory+filename_phi, (np.transpose(all_phi)),
 # Results of the minimization
 # ----------------------------
 
+print chi2_red_exp
 PrintResults1Db(N_IS, Nexp, list_exp, list_CR, list_exp_CR, Best_IS, Best_phi, chi2_red_exp, stderr, chi2_red)
 
 Emin_IS_tab, Emax_IS_tab =  ([] for _ in xrange(2))
