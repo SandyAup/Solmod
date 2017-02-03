@@ -110,7 +110,7 @@ def ExtractExp(name_exp, list_CR):
             data_tmp      = np.loadtxt(st[i])
             Edata_tmp     = data_tmp[:,0]
             ydata_tmp     = data_tmp[:,3]
-            sigma_tmp     = data_tmp[:,9]
+            sigma_tmp     = (data_tmp[:,9] + data_tmp[:,8])/2
             Ndata_tmp     = Edata_tmp.size
 
             if Ncr == 1 :

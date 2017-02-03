@@ -9,6 +9,7 @@ from scipy.optimize import leastsq
 from scipy.optimize import minimize
 from scipy.optimize import fmin_slsqp
 import scipy.interpolate as inter
+from _cubic import *
 
 from scipy.integrate import simps
 
@@ -80,8 +81,100 @@ def InitParameters1D(MODE, powr, Nexp, list_CR) :
 		return init_pars, N_IS, Kmin_norm, Kmax_norm 
 
 #--------------------------------
+'''
+def IS_Spline_flux_Rderiv(ekn, parIS, name_exp_CR) :
+
+	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
+	R_log = np.log10(Ekn_to_R(ekn, a_cr, mGeV, z_cr))
+	xk = np.array([1., 7., 50., 100., 400., 800.])
+
+	#for i in range(0, xk.size):
+	#	xk[i] = R_to_Ekn(xk[i], a_cr, mGeV, z_cr)
+	xk_log = np.log10(xk)
+	xk_log_min = min(xk_log)
+	xk_log_max = max(xk_log)
+
+	logA = 0. ; B = 0.
+	R_tmp = 0. ; y_tmp = 0.
+	result = 0.
+
+	if R_log > xk_log_min and R_log < xk_log_max :
+		result = inter.spline(xk_log, parIS, R_log, order=3, kind='smoothest')
+
+
+	# Extrapolation loi de puissance : y = A x^B
+	elif R_log < xk_log_min :
+
+		R_tmp1 = np.log10(1.005)
+		R_tmp2 = np.log10(0.995)
+
+		# Condition derivee seconde nulle
+		# [f(x+dx) - 2 f(x) + f(x-dx)]/Delta_x^2 = 0
+
+		y_tmp1 = inter.spline(xk_log, parIS, R_tmp1, order=3, kind='smoothest')
+		y_tmp2 = 2*parIS[0] - y_tmp1
+
+		#print y_tmp1, parIS[0], y_tmp2
+		#sys.exit()
+
+		B = (y_tmp1 - y_tmp2) / (R_tmp1 - R_tmp2)
+		logA = y_tmp2 - (B * R_tmp2)
+		result = logA + B * R_log
+
+		#B = (y_tmp - parIS[0]) / (R_tmp - xk_log[0])
+		#logA = parIS[0] - (B * xk_log[0])
+		#result = logA + B * R_log
+
+	elif R_log > xk_log_max :
+
+		R_tmp1 = np.log10(799.995)
+		R_tmp2 = np.log10(800.005)
+		
+		y_tmp1 = inter.spline(xk_log, parIS, R_tmp1, order=3, kind='smoothest')
+		y_tmp2 = 2*parIS[5] - y_tmp1
+
+		B = (y_tmp2 - y_tmp1) / (R_tmp2 - R_tmp1)
+		logA = y_tmp2 - (B * R_tmp2)
+		result = logA + B * R_log
+
+	return np.power(10, result)
 
 def IS_Spline_flux(ekn, parIS, name_exp_CR) :
+
+	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
+	R_log = np.log10(Ekn_to_R(ekn, a_cr, mGeV, z_cr))
+	xk = np.array([1., 7., 50., 100., 400., 800.])
+
+	xk_log = np.log10(xk)
+	xk_log_min = min(xk_log)
+	xk_log_max = max(xk_log)
+
+	logA = 0. ; B = 0.
+	R_tmp = 0. ; y_tmp = 0.
+	result = 0.
+
+	if R_log > xk_log_min and R_log < xk_log_max :
+		result = inter.spline(xk_log, parIS, R_log, order=3, kind='smoothest')
+
+	# Extrapolation loi de puissance : y = A x^B
+	elif R_log < xk_log_min :
+		R_tmp = np.log10(1.005)
+		y_tmp = inter.spline(xk_log, parIS, R_tmp, order=3, kind='smoothest')	
+		B = (y_tmp - parIS[0]) / (R_tmp - xk_log[0])
+		logA = parIS[0] - (B * xk_log[0])
+		result = logA + B * R_log
+
+	elif R_log > xk_log_max :
+		R_tmp = np.log10(799.995)
+		y_tmp = inter.spline(xk_log, parIS, R_tmp, order=3, kind='smoothest')
+		B = (parIS[5] - y_tmp) / (xk_log[5] - R_tmp)
+		logA = parIS[5] - (B * xk_log[5])
+		result = logA + B * R_log
+
+	return np.power(10, result)
+
+
+def IS_Spline_flux_Ekn(ekn, parIS, name_exp_CR) :
 
 	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
 	ekn_log = np.log10(ekn)
@@ -115,6 +208,47 @@ def IS_Spline_flux(ekn, parIS, name_exp_CR) :
 		logA = parIS[5] - (B * xk_log[5])
 		result = logA + B * ekn_log
 
+
+	return np.power(10, result)
+'''
+
+
+def IS_Spline_flux(ekn, parIS, name_exp_CR) :
+
+	a_cr, z_cr, mGeV = CREntry(name_exp_CR)
+
+	R = Ekn_to_R(ekn, a_cr, mGeV, z_cr)
+	R_log = np.log10(R)
+
+	xk = np.array([1., 7., 50., 100., 400., 800.])
+	xk_log = np.log10(xk)
+	xk_log_min = min(xk_log)
+	xk_log_max = max(xk_log)
+
+	logA = 0. ; B = 0.
+	R_tmp = 0. ; y_tmp = 0.
+	result = 0.
+
+	cs = CubicSpline(xk_log, parIS, bc_type="natural")
+
+	if R_log > xk_log_min and R_log < xk_log_max :
+		result = cs(R_log)
+
+	# Extrapolation loi de puissance : y = A x^B
+	elif R_log < xk_log_min :
+		R_tmp = np.log10(1.005)
+		y_tmp = cs(R_tmp)	
+		B = (y_tmp - parIS[0]) / (R_tmp - xk_log[0])
+		logA = parIS[0] - (B * xk_log[0])
+		result = logA + B * R_log
+
+	elif R_log > xk_log_max :
+		R_tmp = np.log10(799.995)
+		y_tmp = cs(R_tmp)
+		B = (parIS[5] - y_tmp) / (xk_log[5] - R_tmp)
+		logA = parIS[5] - (B * xk_log[5])
+		result = logA + B * R_log
+
 	return np.power(10, result)
 
 #--------------------------------
@@ -128,7 +262,6 @@ def Force_Field(Edata, par_IS, par_mod, name_exp_CR) :
 
 	for i in range(0, len(Edata)):
 		flux_TOA.append((np.power(Edata[i],2)*a_cr + 2*mGeV*Edata[i]) / (np.power((Edata[i]+par_mod/AZ),2)*a_cr + 2*mGeV*(Edata[i]+par_mod/AZ)) * IS_Spline_flux(Edata[i]+par_mod/AZ, par_IS, name_exp_CR))
-
 	return np.array(flux_TOA)
 
 #--------------------------------
@@ -510,7 +643,7 @@ list_CR 	= ['H','He']
 list_exp 	= RefDataset()
 MODE  		= "FF"
 powr  		= 0
-SAVE 		= False 
+SAVE 		= True 
 PrintInfos(list_CR, list_exp, MODE, powr)
 
 # -----------------
