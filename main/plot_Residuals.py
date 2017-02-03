@@ -197,19 +197,65 @@ def main():
 	ylow_ams = uncert_ams[:,2]
 	'''
 
+
+	dataH_BESSPOLAR1   = np.loadtxt("/ams/aupetit/Documents/Pheno/Solmod/Data/H_data/data_BESSPOLAR1.dat")
+	dataH_BESSPOLAR2   = np.loadtxt("/ams/aupetit/Documents/Pheno/Solmod/Data/H_data/data_BESSPOLAR2.dat")
+
+	dataHe_BESSPOLAR1   = np.loadtxt("/ams/aupetit/Documents/Pheno/Solmod/Data/He_data/data_BESSPOLAR1.dat")
+	dataHe_BESSPOLAR2   = np.loadtxt("/ams/aupetit/Documents/Pheno/Solmod/Data/He_data/data_BESSPOLAR2.dat")
+
+	dataH_PAMELA2009   = np.loadtxt("/ams/aupetit/Documents/Pheno/Solmod/Data/H_data/data_PAMELA2009.dat")
+
+
+	flux_TOA_interp = np.interp(dataH_BESSPOLAR1[:,0], dict_FF_TOA["E_TOA_H"], dict_FF_TOA["TOAFlux_H_BESSPOLAR1"])
+	print type(dataH_BESSPOLAR1[:,0])
+
+	chi2 = np.sum(np.power((flux_TOA_interp - dataH_BESSPOLAR1[:,3]) / dataH_BESSPOLAR1[:,8] , 2)) / dataH_BESSPOLAR1[:,0].size
+	print chi2
+
+	flux_TOA_interp = np.interp(dataH_BESSPOLAR2[:,0], dict_FF_TOA["E_TOA_H"], dict_FF_TOA["TOAFlux_H_BESSPOLAR2"])
+	print type(dataH_BESSPOLAR2[:,0])
+
+	chi2 = np.sum(np.power((flux_TOA_interp - dataH_BESSPOLAR2[:,3]) / dataH_BESSPOLAR2[:,9] , 2)) / dataH_BESSPOLAR2[:,0].size
+	print chi2
+
+
 	# Plot
 	for j in range(0, len(list_CR)):
 		f, (ax1, ax2) = plt.subplots(2, sharex=True, sharey=True)
 		f.set_facecolor('white')	
 		for name in list_exp_red[j] :
-			if name == "AMS02" or name == "PAMELA2006" :
-				if name == "AMS02" :
+			if name == "BESSPOLAR1" or name == "PAMELA2009" :
+				if name == "BESSPOLAR1" :
 					ax1.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_1D_%s_%s" % (list_CR[j], name)], 'bo', ms=5., label = "1D model")
 					ax1.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_FF_%s_%s" % (list_CR[j], name)], 'rD', ms=5., label= "Force field")
+
+					if (j==0):
+						ax1.plot(dataH_BESSPOLAR1[:,0], 1.+dataH_BESSPOLAR1[:,9]/dataH_BESSPOLAR1[:,3])
+						ax1.plot(dataH_BESSPOLAR1[:,0], 1.-dataH_BESSPOLAR1[:,8]/dataH_BESSPOLAR1[:,3])
+					if(j==1):
+						ax1.plot(dataHe_BESSPOLAR1[:,0], 1.+dataHe_BESSPOLAR1[:,9]/dataHe_BESSPOLAR1[:,3])
+						ax1.plot(dataHe_BESSPOLAR1[:,0], 1.-dataHe_BESSPOLAR1[:,8]/dataHe_BESSPOLAR1[:,3])	
+
 				#ax1.plot(Edata[i], ratio_list_FF_TOA[i], 'rD', ms=5., label= "Force field")
-				elif name == "PAMELA2006" :
+				elif name == "PAMELA2009" :
 					ax2.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_1D_%s_%s" % (list_CR[j], name)], 'bo', ms=5., label = "1D model")
 					ax2.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_FF_%s_%s" % (list_CR[j], name)], 'rD', ms=5., label= "Force field")
+					ax2.plot(dataH_PAMELA2009[:,0], 1.+dataH_PAMELA2009[:,9]/dataH_PAMELA2009[:,3])
+					ax2.plot(dataH_PAMELA2009[:,0], 1.-dataH_PAMELA2009[:,8]/dataH_PAMELA2009[:,3])
+	
+				'''
+				elif name == "BESSPOLAR2" :
+					ax2.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_1D_%s_%s" % (list_CR[j], name)], 'bo', ms=5., label = "1D model")
+					ax2.plot(dict_Data["Edata_%s_%s" % (list_CR[j],name)], dict_ratio_TOA["Ratio_FF_%s_%s" % (list_CR[j], name)], 'rD', ms=5., label= "Force field")
+
+					if (j==0):
+						ax2.plot(dataH_BESSPOLAR2[:,0], 1.+dataH_BESSPOLAR2[:,9]/dataH_BESSPOLAR2[:,3])
+						ax2.plot(dataH_BESSPOLAR2[:,0], 1.-dataH_BESSPOLAR2[:,8]/dataH_BESSPOLAR2[:,3])
+					if(j==1):
+						ax2.plot(dataHe_BESSPOLAR2[:,0], 1.+dataHe_BESSPOLAR2[:,9]/dataHe_BESSPOLAR2[:,3])
+						ax2.plot(dataHe_BESSPOLAR2[:,0], 1.-dataHe_BESSPOLAR2[:,8]/dataHe_BESSPOLAR2[:,3])
+				'''
 
 		SetLegendSub(ax1, 2)
 		SetAxisSub(ax1, ax2, r"$\rm{E_{k/n} [GeV/n]}$", r"$\rm{J^{TOA}_{best-fit} / J_{data}}$", 5e-2, 2e3, 0.85, 1.2, "sharex", "xlog")
